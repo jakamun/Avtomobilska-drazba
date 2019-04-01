@@ -1,0 +1,4 @@
+tabele:
+	-osebe(id, ime, priimek, kraj,prodajelec/kupec...)
+	- trr(id, stanje)
+	-avto(model, znamka, cena, letnik, lastnik)
