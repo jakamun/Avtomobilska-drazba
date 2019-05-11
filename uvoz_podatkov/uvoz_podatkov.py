@@ -2,6 +2,8 @@ import requests
 import re
 import os
 import csv
+import glob
+import pandas as pd
 
 
 def prenesi_url(url):
@@ -58,6 +60,7 @@ def poisci_podatke(block, reg):
     )
     ujemanje = sample.search(block)
     slovar = ujemanje.groupdict()
+    slovar['cena'] = slovar['cena'].replace('.', '')
     return slovar
 
 
@@ -105,7 +108,6 @@ def zapisi_podatke_v_csv(list_of_dicts_ads, directory, filename):
 #    shrani_stran(url, 'uvoz_podatkov\\spletne_strani', '{}.html'.format(znamka))
 
 
-
 directory = 'uvoz_podatkov\\tabele'
 
 # AUDI
@@ -113,7 +115,7 @@ regularni_audi = r'(?P<znamka>\w+)\s+(?P<model>\w+).*</span>.*'
 zapisi_podatke_v_csv(pridobi_slovar('uvoz_podatkov\spletne_strani', 'Audi.html', regularni_audi), directory, 'Audi.csv')
 # BMW
 bmw_regularni = r'(?P<znamka>\w{3})\s.*?:\s(?P<model>(\w|\d)+)\s.*?</span>.*?'
-zapisi_podatke_v_csv(pridobi_slovar('uvoz_podatkov\spletne_strani', 'BMW.html', bmw_regularni), directory, 'BMW.csv')   
+zapisi_podatke_v_csv(pridobi_slovar('uvoz_podatkov\spletne_strani', 'BMW.html', bmw_regularni), directory, 'BMW.csv') 
 # Citroen
 citr_reg = r'(?P<znamka>Citroen)\s(?P<model>(\w|\d)+)\s.*?</span>.*?'
 zapisi_podatke_v_csv(pridobi_slovar('uvoz_podatkov\spletne_strani', 'Citroen.html', citr_reg), directory, 'Citroen.csv')
@@ -157,30 +159,12 @@ zapisi_podatke_v_csv(pridobi_slovar('uvoz_podatkov\spletne_strani', 'Honda.html'
 kia_reg = r'(?P<znamka>Kia)\s(?P<model>\w+-?\w+)\s.*?</span>.*?'
 zapisi_podatke_v_csv(pridobi_slovar('uvoz_podatkov\spletne_strani', 'Kia.html', kia_reg), directory, 'Kia.csv')
 
-#Spremeniti je potrebno locilo v CSV
-csv_dir = os.getcwd()
-dir_tree = os.walk(csv_dir)
-for dirpath, dirnames, filenames in dir_tree:
-   pass
 
-csv_list = []
-for file in filenames:
-   if file.endswith('.csv'):
-      csv_list.append(file)
+#ZDRUZEVANJE TABEL 
 
-for tabela in csv_list:
-    reader = csv.reader(open('uvoz_podatkov/tabele/' + str(tabela), 'rU'), delimiter=',')
-    writer = csv.writer(open('uvoz_podatkov/temp/' + str(tabela), 'w'), delimiter=';')
-    writer.writerows(reader)
-
-#ZDRUZEVANJE TABEL ??? tole ne dela
-import os
-import glob
-import pandas as pd
-
-csv_dir = os.getcwd()
+os.chdir('uvoz_podatkov\\tabele')
 extension = 'csv'
-all_filenames = [i for i in glob.glob('*.{}'.format(extension))]
+csv_list = [i for i in glob.glob('*.{}'.format(extension))]
 
 vozila = pd.concat([pd.read_csv(f) for f in csv_list])
 
