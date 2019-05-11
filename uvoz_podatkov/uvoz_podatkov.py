@@ -46,9 +46,9 @@ def razdeli_na_dele(webpage):
     return list[1:]
 
 
-def poisci_podatke(block):  
+def poisci_podatke(block, reg):
     sample = re.compile(
-        r'(?P<znamka>\w+\s+\w+).*'
+        reg +
         r'<li>(?P<prevozeni_kilometri>\d+)\skm.*'
         r'<li>(?P<gorivo>\w+)\s'
         r'motor,\s(?P<velikost_motorja>\d+)\sccm,\s'
@@ -56,23 +56,27 @@ def poisci_podatke(block):
         r'(REDNA\sOBJAVA\sCENE|AKCIJSKA\sCENA).*?(?P<cena>\d{1,3}\.\d+).*\x80.*',
         re.DOTALL
     )
-    for expression in sample.finditer(block):
-        dict = expression.groupdict()
-    return dict
+    ujemanje = sample.search(block)
+    slovar = ujemanje.groupdict()
+    return slovar
 
-def pridobi_slovar(directory, filename):
+
+def pridobi_slovar(directory, filename, reg):
     webpage = read_file_to_string(directory, filename)
     list_of_ads = razdeli_na_dele(webpage)
     list_of_dicts = []
     for i in range(0, len(list_of_ads)):
-        list_of_dicts.append(poisci_podatke(list_of_ads[i]))
+        try:
+            list_of_dicts.append(poisci_podatke(list_of_ads[i], reg))
+        except:
+            continue
     return list_of_dicts
 
 
 def zapisi_csv(fieldnames, rows, directory, filename):
     os.makedirs(directory, exist_ok=True)
     path = os.path.join(directory, filename)
-    with open(path, 'w', encoding='utf-8') as csv_file:
+    with open(path, 'w', encoding='utf-8', newline='') as csv_file:
         writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
         writer.writeheader()
         for row in rows:
@@ -81,33 +85,42 @@ def zapisi_csv(fieldnames, rows, directory, filename):
 
 
 def zapisi_podatke_v_csv(list_of_dicts_ads, directory, filename):
-    fieldnames = ['znamka', 'prevozeni_kilometri', 'gorivo', 'velikost_motorja','kW', 'cena']
+    fieldnames = ['znamka', 'model', 'prevozeni_kilometri', 'gorivo', 'velikost_motorja', 'kW', 'cena']
     zapisi_csv(fieldnames, list_of_dicts_ads, directory, filename)
     return None
 
-directory_name = 'uvoz_podatkov'
+# POBRANE SPLETNE STRANI
 
-url_audi = ('https://www.avto.net/Ads/results.asp?znamka=Audi&model=&modelID=&tip=&znamka2=&model2=&tip2=&znamka3=&model3=&tip3=&cenaMin=1000&cenaMax=999999&letnikMin=0&letnikMax=2090&bencin=0&starost2=1&oblika=11,%2012,%2013,%2014,%2016,%2017,%2015,%2018&ccmMin=0&ccmMax=99999&mocMin=&mocMax=&kmMin=0&kmMax=9999999&kwMin=&kwMax=999&motortakt=&motorvalji=&lokacija=0&sirina=&dolzina=&dolzinaMIN=&dolzinaMAX=&nosilnostMIN=&nosilnostMAX=&lezisc=&presek=&premer=&col=&vijakov=&EToznaka=&vozilo=&airbag=&barva=&barvaint=&EQ1=1000000000&EQ2=1000000000&EQ3=1000000000&EQ4=100000000&EQ5=1000000000&EQ6=1000000000&EQ7=1000100020&EQ8=1010000001&EQ9=100000000&KAT=1010000000&PIA=&PIAzero=&PSLO=&akcija=&paketgarancije=0&broker=&prikazkategorije=&kategorija=&zaloga=1&arhiv=&presort=&tipsort=&stran=')
-html_audi = 'audi.html'
-csv_audi = 'audi.csv'
+# znamke = ['Audi', 'BMW', 'Citroen', 'Peugeot', 'Renault', 'Opel', 'Mercedes-Benz', 'Ford', 'Volkswagen', 'Volvo', 'Toyota', 'Fiat', 'Suzuki', 'Nissan', 'Honda', 'Kia']
 
-
-#koda
-read_file_to_string
-
-prenesi_url(url_audi)
-
-shrani_stran(url_audi, directory_name, html_audi)
-
-audi = read_file_to_string(directory_name, html_audi)
-
-audi_reg = razdeli_na_dele(audi)
-
-zapisi_podatke_v_csv(pridobi_slovar(directory_name, html_audi), directory_name, csv_audi)
+# for znamka in znamke:
+#    url = ('https://www.avto.net/Ads/results.asp?znamka={}&model=&modelID=&tip=&znamka2=&model2=&tip'
+#    '2=&znamka3=&model3=&tip3=&cenaMin=0&cenaMax=999999&letnikMin=0&letnikMax=2090&bencin=0&starost2='
+#    '1&oblika=11,%2012,%2013,%2014,%2016,%2017,%2015,%2018&ccmMin=0&ccmMax=99999&mocMin=&mocMax=&kmMin='
+#    '0&kmMax=9999999&kwMin=0&kwMax=999&motortakt=&motorvalji=&lokacija=0&sirina=&dolzina=&dolzinaMIN=&dolz'
+#    'inaMAX=&nosilnostMIN=&nosilnostMAX=&lezisc=&presek=&premer=&col=&vijakov=&EToznaka=&vozilo=&airbag=&bar'
+#    'va=&barvaint=&EQ1=1000000000&EQ2=1000000000&EQ3=1000000000&EQ4=100000000&EQ5=1000000000&EQ6=1000000000&E'
+#    'Q7=1000100020&EQ8=1010000001&EQ9=100000000&KAT=1010000000&PIA=&PIAzero=&PSLO=&akcija=&paketgarancije=0&bro'
+#    'ker=&prikazkategorije=&kategorija=&zaloga=1&arhiv=&presort=&tipsort=&stran=').format(znamka)
+#    shrani_stran(url, 'uvoz_podatkov\\spletne_strani', '{}.html'.format(znamka))
 
 
+directory = 'uvoz_podatkov\\tabele'
 
-for i in range(0,48):
-    print(poisci_podatke(audi_reg[i]))
+# AUDI
 
-# OPOMBA: za oglase izberi oglase, ki imajo avte na zalogi in tiste, ki so nad 1000 €, samo rabljeno
+regularni_audi = r'(?P<znamka>\w+)\s+(?P<model>\w+).*</span>.*'
+zapisi_podatke_v_csv(pridobi_slovar('uvoz_podatkov\\spletne_strani', 'Audi.html', regularni_audi), directory, 'Audi.csv')
+
+# BMW
+
+bmw_regularni = r'(?P<znamka>\w{3})\s.*?:\s(?P<model>(\w|\d)+)\s.*?</span>.*?'
+zapisi_podatke_v_csv(pridobi_slovar('uvoz_podatkov\\spletne_strani', 'BMW.html', bmw_regularni), directory, 'BMW.csv')
+
+# Citroen
+
+citr_reg = r'(?P<znamka>Citroen)\s(?P<model>(\w|\d)+)\s.*?</span>.*?'
+zapisi_podatke_v_csv(pridobi_slovar('uvoz_podatkov\\spletne_strani', 'Citroen.html', citr_reg), directory, 'Citroen.csv')
+
+
+# SPLETNE STRANI SO ŽE POBRANE ZA ZAPIS CSV RABIŠ SAMO POGLEDAT KAKO JE ZAPISAN MODEL AVTA IN PRILAGODIŠ REGULARNI IZRAZ
