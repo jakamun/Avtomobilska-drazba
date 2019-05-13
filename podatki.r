@@ -19,5 +19,5 @@ model <- model[c(4, 3, 1)]
 
 avtomobil <- left_join(tabela1, model, by = "model")
 avtomobil$id <- c(1:608)
-avtomobil <- avtomobil[c(11, 1, 9, 4, 5, 6, 7, 8)]
-#write.csv(model, file = "baza/avtomobil.csv", row.names = FALSE)
+avtomobil <- avtomobil[c(11, 9, 4, 5, 6, 7, 8)]
+#write.csv(avtomobil, file = "baza/avtomobil.csv", row.names = FALSE)
