@@ -36,3 +36,4 @@ vignettes/*.pdf
 rsconnect/
 auth.py
 auth.R
+.Rproj.user
