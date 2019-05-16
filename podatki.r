@@ -20,4 +20,12 @@ model <- model[c(4, 3, 1)]
 avtomobil <- left_join(tabela1, model, by = "model")
 avtomobil$id <- c(1:608)
 avtomobil <- avtomobil[c(11, 9, 4, 5, 6, 7, 8)]
+avtomobil$zacetna_cena <- round(avtomobil$cena * 0.75)
 #write.csv(avtomobil, file = "baza/avtomobil.csv", row.names = FALSE)
+
+oseba <- read_csv("baza/osebe.csv")
+
+oseba$cena[oseba$cenilec == 0] = NA
+oseba$ocena[oseba$cenilec == 0] = NA
+
+#write.csv(oseba, file = "baza/oseba.csv", row.names = FALSE)
