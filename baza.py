@@ -1,35 +1,115 @@
-# uvozimo ustrezne podatke za povezavo
+#!/usr/bin/python
+
+# -*- encoding: utf-8 -*-
+
+
+
+# uvozimo bottle.py
 
 from bottle import *
-import auth_public as auth
-import psycopg2, psycopg2.extensions, psycopg2.extras
-import hashlib
 
-import auth
-auth.db = "sem2019_%s" % auth.user
+
+
+# uvozimo ustrezne podatke za povezavo
+
+import auth_public as auth
+
+
 
 # uvozimo psycopg2
+
 import psycopg2, psycopg2.extensions, psycopg2.extras
+
 psycopg2.extensions.register_type(psycopg2.extensions.UNICODE) # se znebimo problemov s šumniki
 
-import csv
 
-def uvozi_podatke():
-    with open("oseba.csv") as f:
-        rd = csv.reader(f)
-        next(rd) # izpusti naslovno vrstico
-        for r in rd:
-            r = [None if x in ('', '-') else x for x in r]
-            cur.execute("""
-                INSERT INTO oseba
-                (id_oseba, ime, priimek, rojstvo, racun,
-                 je_cenilec, kraj, ocena, cena)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
-                RETURNING id_oseba
-            """, r)
-            rid, = cur.fetchone()
-            print("Uvožena oseba %s z ID-jem %d" % (r[0], rid))
-    conn.commit()
+
+# odkomentiraj, če želiš sporočila o napakah
+
+# debug(True)
+
+
+
+@get('/static/<filename:path>')
+
+def static(filename):
+
+    return static_file(filename, root='static')
+
+
+
+@get('/')
+
+def index():
+
+    cur.execute("SELECT * FROM oseba ORDER BY priimek, ime")
+
+    return template('komitenti.html', osebe=cur)
+
+
+
+@get('/transakcije/:x/')
+
+def transakcije(x):
+
+    cur.execute("SELECT * FROM transakcija WHERE znesek > %s ORDER BY znesek, id", [int(x)])
+
+    return template('transakcije.html', x=x, transakcije=cur)
+
+
+
+@get('/dodaj_transakcijo')
+
+def dodaj_transakcijo():
+
+    return template('dodaj_transakcijo.html', znesek='', racun='', opis='', napaka=None)
+
+
+
+@post('/dodaj_transakcijo')
+
+def dodaj_transakcijo_post():
+
+    znesek = request.forms.znesek
+
+    racun = request.forms.racun
+
+    opis = request.forms.opis
+
+    try:
+
+        cur.execute("INSERT INTO transakcija (znesek, racun, opis) VALUES (%s, %s, %s)",
+
+                    (znesek, racun, opis))
+
+        conn.commit()
+
+    except Exception as ex:
+
+        return template('dodaj_transakcijo.html', znesek=znesek, racun=racun, opis=opis,
+
+                        napaka = 'Zgodila se je napaka: %s' % ex)
+
+    redirect("/")
+
+
+
+######################################################################
+
+# Glavni program
+
+
+
+# priklopimo se na bazo
 
 conn = psycopg2.connect(database=auth.db, host=auth.host, user=auth.user, password=auth.password)
+
+conn.set_isolation_level(psycopg2.extensions.ISOLATION_LEVEL_AUTOCOMMIT) # onemogočimo transakcije
+
 cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor) 
+
+
+
+# poženemo strežnik na portu 8080, glej http://localhost:8000/
+
+run(host='localhost', port=8000)
