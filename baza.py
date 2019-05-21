@@ -9,16 +9,20 @@ import auth_public as auth
 
 # uvozimo psycopg2
 import psycopg2, psycopg2.extensions, psycopg2.extras
-
 psycopg2.extensions.register_type(psycopg2.extensions.UNICODE) # se znebimo problemov s šumniki
 
 # odkomentiraj, če želiš sporočila o napakah
 # debug(True)
 
-
 @get('/static/<filename:path>')
 def static(filename):
     return static_file(filename, root='static')
+
+
+@get('/')
+def index():
+    cur.execute("SELECT * FROM oseba ORDER BY priimek, ime")
+    return template('osebe.html', osebe=cur)
 
 ######################################################################
 # Glavni program
