@@ -42,52 +42,82 @@
     <div class="container">
 
       <form class="form-signin" role="form" method="post" action=".">
-
         <h2 class="form-signin-heading">Registracija</h2>
-
         %if napaka:
-
         <div class="alert alert-warning">{{napaka}}</div>
-
         %end
 
+        <input type="ime" class="form-control" placeholder="Ime"
+              %if ime:
+              value="{{ime}}"
+              %end
+              name="ime"
+              required><br>
 
+        <input type="priimek" class="form-control" placeholder="Priimek"
+              %if priimek:
+              value="{{priimek}}"
+              %end
+              name="priimek"
+              required autofocus><br>
 
-        <input type="username" class="form-control" placeholder="Uporabniško ime"
+        <input type="rojstvo" class="form-control" placeholder="Rojstvo"
+              %if rojstvo:
+              value="{{rojstvo}}"
+              %end
+              name="rojstvo"
+              required><br>
 
-               %if username:
+        <input type="kraj" class="form-control" placeholder="Kraj"
+                %if kraj:
+                value="{{kraj}}"
+                %end
+                name="kraj"
+                required><br>
 
-               value="{{username}}"
-
+        <input type="racun" class="form-control" placeholder="Racun"
+               %if racun:
+               value="{{racun}}"
                %end
+               name="racun"
+               required><br>
 
+        <select type="je_cenilec" class="form-control" name="je_cenilec">
+          <option value=TRUE>Sem cenilec</option>
+          <option value=FALSE>Nisem cenilec</option>
+        </select>
+        <br>
+              
+        <input type="cena" class="form-control" placeholder="Koliko računaš?"
+               %if cena:
+               value="{{cena}}"
+               %end
+               name="cena"
+               required><br>
+
+        <input type="ocena" class="form-control" placeholder="Koliko si dober?"
+        %if ocena:
+        value="{{ocena}}"
+        %end
+        name="ocena"
+        required><br>
+
+        <input type="username" class="form-control" placeholder="Uporabnisko ime"
+               %if username:
+               value="{{username}}"
+               %end
                name="username"
+               required><br>
 
-               required autofocus>
+        <input type="password" class="form-control" placeholder="Geslo" name="password1" required><br>
 
-<!--        <input type="username" class="form-control" placeholder="Polno ime"
-
-               #%if ime:
-
-               value="{ {ime} }"
-
-               #%end
-
-               name="ime"
-
-               required>-->
-
-        <input type="password" class="form-control" placeholder="Geslo" name="password1" required>
-
-        <input type="password" class="form-control" placeholder="Geslo" name="password2" required>
+        <input type="password" class="form-control" placeholder="Geslo" name="password2" required><br>
 
         <button class="btn btn-lg btn-primary btn-block" type="submit">Registriraj se</button>
 
       </form>
 
     </div> <!-- /container -->
-
-
 
 
 

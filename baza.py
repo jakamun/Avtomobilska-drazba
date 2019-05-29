@@ -3,6 +3,8 @@
 
 # uvozimo bottle.py
 from bottle import *
+#import bottle
+import hashlib
 
 # uvozimo ustrezne podatke za povezavo
 import auth_public as auth
@@ -46,7 +48,7 @@ def get_user(auto_login = True):
     # Preverimo, ali ta uporabnik obstaja
     if username is not None:
         c = conn.cursor()
-        c.execute("SELECT username FROM uporabnik WHERE username=?",
+        c.execute("SELECT username FROM oseba WHERE username=%s",
                   [username])
         r = c.fetchone()
         c.close ()
@@ -78,22 +80,52 @@ def login_get():
                            username=None)
 
 
+@post("/login/")
+def login_post():
+    """Obdelaj izpolnjeno formo za prijavo"""
+    # Uporabniško ime, ki ga je uporabnik vpisal v formo
+    username = conn.request.forms.username
+    # Izračunamo MD5 has gesla, ki ga bomo spravili
+    password = password_md5(conn.request.forms.password)
+    # Preverimo, ali se je uporabnik pravilno prijavil
+    c = conn.cursor()
+    c.execute("SELECT 1 FROM oseba WHERE username=%s AND password=%s",
+              [username, password])
+    if c.fetchone() is None:
+        # Username in geslo se ne ujemata
+        return template("login.html",
+                               napaka="Nepravilna prijava",
+                               username=username)
+    else:
+        # Vse je v redu, nastavimo cookie in preusmerimo na glavno stran
+        response.set_cookie('username', username, path='/', secret=secret)
+        redirect("/")
+
+
 @get("/register/")
-def login_get():
+def register_get():
     """Prikaži formo za registracijo."""
-    return template("register.html", 
-                           username=None, napaka=None)
+    return template("register.html", ime=None, priimek=None, racun=None, rojstvo=None,
+                          kraj=None, je_cenilec=None, cena=None, ocena=None, username=None, napaka=None)
 
 
 @post("/register/")
 def register_post():
     """Registriraj novega uporabnika."""
+    ime = request.forms.ime
+    priimek = request.forms.priimek
+    racun = request.forms.racun
+    rojstvo = request.forms.rojstvo
+    kraj = request.forms.kraj
+    je_cenilec = request.forms.je_cenilec
+    ocena = request.forms.ocena
+    cena = request.forms.cena
     username = request.forms.username
     password1 = request.forms.password1
     password2 = request.forms.password2
     # Ali uporabnik že obstaja?
     c = conn.cursor()
-    c.execute("SELECT 1 FROM uporabnik WHERE username=?", [username])
+    c.execute("SELECT 1 FROM oseba WHERE username=%s", [username])
     if c.fetchone():
         # Uporabnik že obstaja
         return template("register.html",
@@ -107,8 +139,8 @@ def register_post():
     else:
         # Vse je v redu, vstavi novega uporabnika v bazo
         password = password_md5(password1)
-        c.execute("INSERT INTO uporabnik (username, password) VALUES (%s, %s)",
-                  (username, password))
+        c.execute("INSERT INTO oseba (ime, priimek, racun, rojstvo, kraj, je_cenilec, cena, ocena, username, password) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                  (ime, priimek, racun, rojstvo, kraj, je_cenilec, cena, ocena, username, password))
         # Daj uporabniku cookie
         response.set_cookie('username', username, path='/', secret=secret)
         redirect("/")
