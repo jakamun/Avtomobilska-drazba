@@ -61,21 +61,15 @@ def get_user(auto_login = True):
     else:
         return None
 
-#@get('/')
-#def index():
-#    cur.execute("SELECT * FROM oseba ORDER BY priimek, ime")
-#    return template('osebe.html', osebe=cur)
 
 @get("/")
 def main():
     """Glavna stran."""
-    # Iz cookieja dobimo uporabnika (ali ga preusmerimo na login, če
-    # nima cookija)
+    username = get_user()
     cur.execute("SELECT znamka, model, gorivo, prevozeni_kilometri, velikost_motorja, kw, cena  FROM avtomobil AS avto" +
 " JOIN model ON avto.id_model = model.id_model" +
 " JOIN znamka ON znamka.id_znamka = model.id_znamka")
-    # Vrnemo predlogo za glavno stran
-    return template('avtomobili.html', avto=cur)
+    return template('avtomobili.html', avto=cur, username=username)
 
 
 @get("/login/")

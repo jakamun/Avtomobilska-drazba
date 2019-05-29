@@ -4,10 +4,20 @@
   <link href="/static/style.css" rel="stylesheet">
 </head>
 <body>
-  <h2>{{naslov}}</h2>
+  <h1>{{naslov}}</h1>
+  <h3>Dejanja:</h3>
+
+
+    %if defined('username'):
+    <div>
+        <li><a href="/logout/">odjava</a></li>
+    </div>
+    %end
+  
+
 
 {{!base}}
-
+  
 
 
 </body>
