@@ -1,30 +1,24 @@
-%rebase('osnova.html', naslov='Avtomobili nad {} evri'.format(x))
+%rebase('osnova.html', naslov='Avtomobili')
 
   <table cellpadding="0" cellspacing="0" border="1">
   <tr>
-     <th>ID Avto</th>
-     <th>ID Model</th>
-     <th>Prevoženi km</th>
+     <th>Znamka</th>
+     <th>Model</th>
      <th>Gorivo</th>
+     <th>Prevoženi km</th>
      <th>Velikost motorja(ccm)</th>
      <th>Kw</th>
      <th>Cena</th>
-     <th>Začetna cena</th>
   </tr>
-  %for (id_avto,id_model,prevozeni_kilometri,gorivo,velikost_motorja,kw,cena,zacetna_cena) in transakcije:
+  %for (znamka,model,gorivo,prevozeni_kilometri,velikost_motorja,kw,cena) in avto:
     <tr>
-       <td>{{id_avto}}</td>
-       <td>{{id_model}}</td>
-       <td>{{prevozeni_kilometri}}</td>
+       <td>{{znamka}}</td>
+       <td>{{model}}</td>
        <td>{{gorivo}}</td>
+       <td>{{prevozeni_kilometri}}</td>
        <td>{{velikost_motorja}}</td>
        <td>{{kw}}</td>
        <td>{{cena}}</td>
-       <td>{{zacetna_cena}}</td>
     </tr>
   %end
   </table>
-
-  <p>
-    <a href="/">Komitenti</a>
-  </p>

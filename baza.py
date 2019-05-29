@@ -61,15 +61,21 @@ def get_user(auto_login = True):
     else:
         return None
 
+#@get('/')
+#def index():
+#    cur.execute("SELECT * FROM oseba ORDER BY priimek, ime")
+#    return template('osebe.html', osebe=cur)
+
 @get("/")
 def main():
     """Glavna stran."""
     # Iz cookieja dobimo uporabnika (ali ga preusmerimo na login, če
     # nima cookija)
-    (username) = get_user()
+    cur.execute("SELECT znamka, model, gorivo, prevozeni_kilometri, velikost_motorja, kw, cena  FROM avtomobil AS avto" +
+" JOIN model ON avto.id_model = model.id_model" +
+" JOIN znamka ON znamka.id_znamka = model.id_znamka")
     # Vrnemo predlogo za glavno stran
-    return template("main.html",
-                           username=username)
+    return template('avtomobili.html', avto=cur)
 
 
 @get("/login/")
@@ -84,9 +90,9 @@ def login_get():
 def login_post():
     """Obdelaj izpolnjeno formo za prijavo"""
     # Uporabniško ime, ki ga je uporabnik vpisal v formo
-    username = conn.request.forms.username
+    username = request.forms.username
     # Izračunamo MD5 has gesla, ki ga bomo spravili
-    password = password_md5(conn.request.forms.password)
+    password = password_md5(request.forms.password)
     # Preverimo, ali se je uporabnik pravilno prijavil
     c = conn.cursor()
     c.execute("SELECT 1 FROM oseba WHERE username=%s AND password=%s",
@@ -100,6 +106,13 @@ def login_post():
         # Vse je v redu, nastavimo cookie in preusmerimo na glavno stran
         response.set_cookie('username', username, path='/', secret=secret)
         redirect("/")
+
+
+@get("/logout/")
+def logout():
+    """Pobriši cookie in preusmeri na login."""
+    response.delete_cookie('username')
+    redirect('/login/')
 
 
 @get("/register/")
