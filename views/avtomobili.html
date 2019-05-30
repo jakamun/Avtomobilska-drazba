@@ -8,7 +8,9 @@
      <th>Prevoženi km</th>
      <th>Velikost motorja(ccm)</th>
      <th>Kw</th>
-     <th>Cena</th>
+     <th>Izklicna cena</th>
+     <th>Tvoja ponudba</th>
+     <th>Oddaja</th>
   </tr>
   %for (znamka,model,gorivo,prevozeni_kilometri,velikost_motorja,kw,cena) in avto:
     <tr>
@@ -19,6 +21,8 @@
        <td>{{velikost_motorja}}</td>
        <td>{{kw}}</td>
        <td>{{cena}}</td>
+       <td><input type="ocena" class="form-control" placeholder="Nova ponudba"></td>
+       <td><button class="btn btn-lg btn-primary btn-block" type="submit">Ponudba</button></td>
     </tr>
   %end
   </table>

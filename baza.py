@@ -143,11 +143,22 @@ def register_post():
         return template("register.html",
                                username=username,
                                napaka='Gesli se ne ujemata')
+    elif je_cenilec=='TRUE':
+        if ocena in range(0,11):
+            # Vse je v redu, vstavi novega uporabnika v bazo
+            password = password_md5(password1)
+            c.execute("INSERT INTO oseba (ime, priimek, racun, rojstvo, kraj, je_cenilec, cena, ocena, username, password) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                    (ime, priimek, racun, rojstvo, kraj, je_cenilec, cena, ocena, username, password))
+            # Daj uporabniku cookie
+            response.set_cookie('username', username, path='/', secret=secret)
+            redirect("/")
+        else:
+            return template("register.html", ime=ime, priimek=priimek, racun=racun, rojstvo=rojstvo, kraj=kraj, je_cenilec=je_cenilec, cena=cena, ocena=ocena, username=username, napaka='Ocena mora biti med 0 in 10')
     else:
         # Vse je v redu, vstavi novega uporabnika v bazo
         password = password_md5(password1)
         c.execute("INSERT INTO oseba (ime, priimek, racun, rojstvo, kraj, je_cenilec, cena, ocena, username, password) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
-                  (ime, priimek, racun, rojstvo, kraj, je_cenilec, cena, ocena, username, password))
+                  (ime, priimek, racun, rojstvo, kraj, je_cenilec, None, None, username, password))
         # Daj uporabniku cookie
         response.set_cookie('username', username, path='/', secret=secret)
         redirect("/")
