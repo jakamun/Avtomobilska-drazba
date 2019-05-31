@@ -144,7 +144,7 @@ def register_post():
                                username=username,
                                napaka='Gesli se ne ujemata')
     elif je_cenilec=='TRUE':
-        if ocena in range(0,11):
+        if int(ocena) in range(0,11):
             # Vse je v redu, vstavi novega uporabnika v bazo
             password = password_md5(password1)
             c.execute("INSERT INTO oseba (ime, priimek, racun, rojstvo, kraj, je_cenilec, cena, ocena, username, password) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
