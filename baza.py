@@ -69,7 +69,7 @@ def main():
     cur.execute("SELECT znamka, model, gorivo, prevozeni_kilometri, velikost_motorja, kw, cena  FROM avtomobil AS avto" +
 " JOIN model ON avto.id_model = model.id_model" +
 " JOIN znamka ON znamka.id_znamka = model.id_znamka")
-    return template('avtomobili.html', avto=cur, username=username) 
+    return template('avtomobili.html', avto=cur, username=username[0]) 
 
 
 @get("/login/")
