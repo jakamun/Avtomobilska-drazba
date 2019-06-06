@@ -3,7 +3,6 @@
 
 # uvozimo bottle.py
 from bottle import *
-#import bottle
 import hashlib
 
 # uvozimo ustrezne podatke za povezavo
@@ -69,7 +68,17 @@ def main():
     cur.execute("SELECT znamka, model, gorivo, prevozeni_kilometri, velikost_motorja, kw, cena  FROM avtomobil AS avto" +
 " JOIN model ON avto.id_model = model.id_model" +
 " JOIN znamka ON znamka.id_znamka = model.id_znamka")
-    return template('avtomobili.html', avto=cur, username=username[0]) 
+    return template('avtomobili.html', avto=cur, ponudba=None, username=username[0]) 
+
+
+@post("/")
+def oddaj_ponudbo():
+    username = get_user()
+    c = conn.cursor()
+    c.execute("SELECT id_oseba FROM oseba WHERE username=%s", [username])
+    ponudba = request.forms.ponudba
+    c.execute("INSERT INTO ponudba (ponudba) VALUES (%s, %s, %s)", (id_oseba, id_avto, ponudba))
+    redirect('/')
 
 
 @get("/login/")
@@ -93,9 +102,7 @@ def login_post():
               [username, password])
     if c.fetchone() is None:
         # Username in geslo se ne ujemata
-        return template("login.html",
-                               napaka="Nepravilna prijava",
-                               username=username)
+        return template("login.html", napaka='Nepravilna prijava', username=username)
     else:
         # Vse je v redu, nastavimo cookie in preusmerimo na glavno stran
         response.set_cookie('username', username, path='/', secret=secret)
@@ -135,16 +142,23 @@ def register_post():
     c.execute("SELECT 1 FROM oseba WHERE username=%s", [username])
     if c.fetchone():
         # Uporabnik že obstaja
-        return template("register.html",
-                               username=username,
-                               napaka='To uporabniško ime je že zavzeto')
+        return template("register.html", ime=ime, priimek=priimek, racun=racun, rojstvo=rojstvo, kraj=kraj, 
+            je_cenilec=je_cenilec, cena=cena, ocena=ocena, username=None, napaka='To uporabniško ime je zasedeno.')
     elif not password1 == password2:
         # Geslo se ne ujemata
-        return template("register.html",
-                               username=username,
-                               napaka='Gesli se ne ujemata')
+        return template("register.html", ime=ime, priimek=priimek, racun=racun, rojstvo=rojstvo, kraj=kraj, 
+            je_cenilec=je_cenilec, cena=cena, ocena=ocena, username=username, napaka='Gesli se ne ujemata.')
     elif je_cenilec=='TRUE':
-        if int(ocena) in range(0,11):
+        if cena == '':
+            return template("register.html", ime=ime, priimek=priimek, racun=racun, rojstvo=rojstvo, kraj=kraj, 
+            je_cenilec=je_cenilec, cena=cena, ocena=ocena, username=username, napaka='Navedi koliko računaš')
+        elif ocena == '':
+            return template("register.html", ime=ime, priimek=priimek, racun=racun, rojstvo=rojstvo, kraj=kraj, 
+            je_cenilec=je_cenilec, cena=cena, ocena=ocena, username=username, napaka='Če si cenilec se moraš oceniti')
+        elif int(ocena) not in range(0,11):
+            return template("register.html", ime=ime, priimek=priimek, racun=racun, rojstvo=rojstvo, kraj=kraj, 
+            je_cenilec=je_cenilec, cena=cena, ocena=ocena, username=username, napaka='Ocena mora biti med 1 in 10')
+        else:
             # Vse je v redu, vstavi novega uporabnika v bazo
             password = password_md5(password1)
             c.execute("INSERT INTO oseba (ime, priimek, racun, rojstvo, kraj, je_cenilec, cena, ocena, username, password) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
@@ -152,8 +166,13 @@ def register_post():
             # Daj uporabniku cookie
             response.set_cookie('username', username, path='/', secret=secret)
             redirect("/")
-        else:
-            return template("register.html", ime=ime, priimek=priimek, racun=racun, rojstvo=rojstvo, kraj=kraj, je_cenilec=je_cenilec, cena=cena, ocena=ocena, username=username, napaka='Ocena mora biti med 0 in 10')
+    elif je_cenilec == 'FALSE':
+        if cena != '':
+            return template("register.html", ime=ime, priimek=priimek, racun=racun, rojstvo=rojstvo, kraj=kraj, 
+            je_cenilec=je_cenilec, cena=cena, ocena=ocena, username=username, napaka='Če nisi cenilec ne moreš podati cene')
+        elif ocena != '':
+            return template("register.html", ime=ime, priimek=priimek, racun=racun, rojstvo=rojstvo, kraj=kraj, 
+            je_cenilec=je_cenilec, cena=cena, ocena=ocena, username=username, napaka='Če nisi cenilec ne podaš ocene')
     else:
         # Vse je v redu, vstavi novega uporabnika v bazo
         password = password_md5(password1)

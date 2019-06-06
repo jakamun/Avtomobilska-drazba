@@ -12,7 +12,7 @@
      <th>Tvoja ponudba</th>
      <th>Oddaja</th>
   </tr>
-  %for (znamka,model,gorivo,prevozeni_kilometri,velikost_motorja,kw,cena) in avto:
+  %for (znamka,model, gorivo, prevozeni_kilometri, velikost_motorja, kw, cena) in avto:
     <tr>
        <td>{{znamka}}</td>
        <td>{{model}}</td>
@@ -21,7 +21,7 @@
        <td>{{velikost_motorja}}</td>
        <td>{{kw}}</td>
        <td>{{cena}}</td>
-       <td><input type="ocena" class="form-control" placeholder="Nova ponudba"></td>
+       <td><input type="ponudba" class="form-control" placeholder="Nova ponudba" name="ponudba" required></td>
        <td><button class="btn btn-lg btn-primary btn-block" type="submit">Ponudba</button></td>
     </tr>
   %end
