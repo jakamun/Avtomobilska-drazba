@@ -65,21 +65,49 @@ def get_user(auto_login = True):
 def main():
     """Glavna stran."""
     username = get_user()
-    cur.execute("SELECT znamka, model, gorivo, prevozeni_kilometri, velikost_motorja, kw, cena  FROM avtomobil AS avto" +
+    cur.execute("SELECT id_avto, znamka, model, gorivo, prevozeni_kilometri, velikost_motorja, kw, cena  FROM avtomobil AS avto" +
 " JOIN model ON avto.id_model = model.id_model" +
 " JOIN znamka ON znamka.id_znamka = model.id_znamka")
     return template('avtomobili.html', avto=cur, ponudba=None, username=username[0]) 
 
 
-@post("/")
-def oddaj_ponudbo():
+@post('/')
+def avtomobili_filter():
+    search = request.forms.search.lower()
     username = get_user()
-    c = conn.cursor()
-    c.execute("SELECT id_oseba FROM oseba WHERE username=%s", [username])
-    ponudba = request.forms.ponudba
-    c.execute("INSERT INTO ponudba (ponudba) VALUES (%s, %s, %s)", (id_oseba, id_avto, ponudba))
-    redirect('/')
+    if search == '':
+        cur.execute("SELECT id_avto, znamka, model, gorivo, prevozeni_kilometri, velikost_motorja, kw, cena  FROM avtomobil AS avto" +
+        " JOIN model ON avto.id_model = model.id_model" +
+        " JOIN znamka ON znamka.id_znamka = model.id_znamka")
+        return template('avtomobili.html', avto=cur, ponudba=None, username=username[0])
+    napaka = None
+    sez = search.split(':') 
+    cur.execute("SELECT id_avto, znamka, model, gorivo, prevozeni_kilometri, velikost_motorja, kw, cena  FROM avtomobil AS avto" +
+        " JOIN model ON avto.id_model = model.id_model" +
+        " JOIN znamka ON znamka.id_znamka = model.id_znamka WHERE LOWER(znamka) LIKE %s"
+                "OR LOWER(model) LIKE %s"
+                "OR LOWER(gorivo) LIKE %s"
+                "OR CAST(kw AS varchar(10)) LIKE  %s"
+                "OR CAST(velikost_motorja AS varchar(10)) LIKE %s"
+                "OR CAST(prevozeni_kilometri AS varchar(10)) LIKE %s"
+                "OR CAST(zacetna_cena AS varchar(10)) LIKE %s"                ,
+                7 *['%' + search + '%'])
+    return template('avtomobili.html', avto=cur, ponudba=None, username=username[0])
 
+@get('/avto/:x')
+def avto_get(x):
+    username = get_user()
+    cur.execute("SELECT id_avto, znamka, model, gorivo, prevozeni_kilometri, velikost_motorja, kw, cena  FROM avtomobil AS avto" +
+    " JOIN model ON avto.id_model = model.id_model" +
+    " JOIN znamka ON znamka.id_znamka = model.id_znamka WHERE id_avto=%s", [x])
+    sez = cur.fetchone()
+    znamka = sez[1]
+    model = sez[2]
+    prevozeni_kilometri = sez[3]
+    velikost_motorja = sez[4]
+    kw = sez[5]
+    cena = sez[6]
+    return template('avto.html', x=x, znamka=znamka, model=model, gorivo=gorivo, prevozeni_kilometri=prevozeni_kilometri, velikost_motorja=velikost_motorja, kw=kw, cena=cena, username=username[0])
 
 @get("/login/")
 def login_get():

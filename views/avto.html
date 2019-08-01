@@ -1,0 +1,22 @@
+%rebase('base.html', naslov='Informacije {}'.format(x))
+
+<table cellpading="0" cellspacing="0" border="1">
+    <tr>
+        <th>Znamka</th>
+        <th>Model</th>
+        <th>Gorivo</th>
+        <th>Prevoženi km</th>
+        <th>Velikost motorja(ccm)</th>
+        <th>Kw</th>
+        <th>Izklicna cena</th>
+    </tr>
+           <tr>
+              <td>{{znamka}}</td>
+              <td>{{model}}</td>
+              <td>{{gorivo}}</td>
+              <td>{{prevozeni_kilometri}}</td>
+              <td>{{velikost_motorja}}</td>
+              <td>{{kw}}</td>
+              <td>{{cena}}</td>
+           </tr>
+</table>
