@@ -1,28 +1,254 @@
 %rebase('base.html', naslov='Avtomobili')
 
-  <table cellpadding="0" cellspacing="0" border="1">
-  <tr>
-     <th>Znamka</th>
-     <th>Model</th>
-     <th>Gorivo</th>
-     <th>Prevoženi km</th>
-     <th>Velikost motorja(ccm)</th>
-     <th>Kw</th>
-     <th>Izklicna cena</th>
-     <th>Tvoja ponudba</th>
-     <th>Oddaja</th>
-  </tr>
-  %for (znamka,model, gorivo, prevozeni_kilometri, velikost_motorja, kw, cena) in avto:
-    <tr>
-       <td>{{znamka}}</td>
-       <td>{{model}}</td>
-       <td>{{gorivo}}</td>
-       <td>{{prevozeni_kilometri}}</td>
-       <td>{{velikost_motorja}}</td>
-       <td>{{kw}}</td>
-       <td>{{cena}}</td>
-       <td><input type="ponudba" class="form-control" placeholder="Nova ponudba" name="ponudba" required></td>
-       <td><button class="btn btn-lg btn-primary btn-block" type="submit">Ponudba</button></td>
-    </tr>
-  %end
-  </table>
+
+<form class="form-inline" method="post">
+      <input class="form-control form-control-sm mr-3 w-25" type="text" placeholder="Išči" aria-label="Search" name="search" style="height:37px;">
+      <i class="fas fa-search" aria-hidden="true"></i>
+      <div class="dropdown">
+          <div class="form-group form-group-sm mr-3 w-35">
+              <select type="text" name="razvrscanje" value="" class="form-control" required="true">
+                  %for i, (raz, sql) in enumerate(moznosti):
+                      <option value="{{i}}"
+                      %if i == razvrscanje:
+                      selected
+                      %end
+                      >{{raz}}</option>
+                  %end
+              </select>
+          </div>
+      </div>
+      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Najdi in razvrsti</button>
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="mx-3" role="img" viewBox="0 0 24 24" focusable="false"
+           data-toggle="popover" data-trigger="hover" data-placement="right" data-html="true"
+           data-content="Napredno iskanje:
+           <br/>'Ime stolpca' : 'iskalni parameter'
+           <br/>Na primer:
+           <br/>FIS code : 5658
+           <br/>Ime : Peter">
+          <circle cx="10.5" cy="10.5" r="7.5"/><path d="M21 21l-5.2-5.2"/></svg>
+  </form>
+
+
+<div class="InnerDiv1 PaddingBTM">
+        <div class="Select MarginL", type=submit>
+            <select id="make" name="znamka">
+                <option value="">Izberite znamko</option>
+                <option value="Audi">Audi</option>
+<option value="BMW">BMW</option>
+<option value="Citroen">Citroen</option>
+<option value="Ford">Ford</option>
+<option value="Mercedes-Benz">Mercedes-Benz</option>
+<option value="Opel">Opel</option>
+<option value="Peugeot">Peugeot</option>
+<option value="Renault">Renault</option>
+<option value="Škoda">Škoda</option>
+<option value="Volkswagen">Volkswagen</option>
+<option value="" disabled>---------------------------</option>
+<option value="Abarth" foo="100">Abarth</option>
+<option value="AEV" foo="150">AEV</option>
+<option value="Aixam" foo="200">Aixam</option>
+<option value="Alfa Romeo" foo="300">Alfa Romeo</option>
+<option value="Alpine" foo="350">Alpine</option>
+<option value="Artega" foo="400">Artega</option>
+<option value="Aston Martin" foo="500">Aston Martin</option>
+<option value="Audi" foo="600">Audi</option>
+<option value="Austin" foo="700">Austin</option>
+<option value="Autobianchi" foo="800">Autobianchi</option>
+<option value="Bentley" foo="900">Bentley</option>
+<option value="BMW" foo="1000">BMW</option>
+<option value="Brilliance" foo="1100">Brilliance</option>
+<option value="Bugatti" foo="1200">Bugatti</option>
+<option value="Buick" foo="1300">Buick</option>
+<option value="Cadillac" foo="1400">Cadillac</option>
+<option value="Chatenet" foo="1500">Chatenet</option>
+<option value="Chevrolet" foo="1600">Chevrolet</option>
+<option value="Chrysler" foo="1700">Chrysler</option>
+<option value="Citroen" foo="1800">Citroen</option>
+<option value="Cobra" foo="1900">Cobra</option>
+<option value="Cupra" foo="2050">Cupra</option>
+<option value="Dacia" foo="2100">Dacia</option>
+<option value="Daewoo" foo="2200">Daewoo</option>
+<option value="Daihatsu" foo="2400">Daihatsu</option>
+<option value="DKW" foo="2500">DKW</option>
+<option value="Dodge" foo="2600">Dodge</option>
+<option value="Donkervoort" foo="2700">Donkervoort</option>
+<option value="DS Automobiles" foo="2750">DS Automobiles</option>
+<option value="EV" foo="2800">EV</option>
+<option value="Ferrari" foo="2900">Ferrari</option>
+<option value="Fiat" foo="3000">Fiat</option>
+<option value="Fisker" foo="3100">Fisker</option>
+<option value="Ford" foo="3200">Ford</option>
+<option value="GMC" foo="3300">GMC</option>
+<option value="Greatwall" foo="3400">Greatwall</option>
+<option value="Grecav" foo="3500">Grecav</option>
+<option value="Hansa" foo="3550">Hansa</option>
+<option value="Honda" foo="3600">Honda</option>
+<option value="Hummer" foo="3700">Hummer</option>
+<option value="Hyundai" foo="3800">Hyundai</option>
+<option value="Infiniti" foo="3900">Infiniti</option>
+<option value="Isuzu" foo="4000">Isuzu</option>
+<option value="Iveco" foo="4100">Iveco</option>
+<option value="Jaguar" foo="4200">Jaguar</option>
+<option value="JDM" foo="4300">JDM</option>
+<option value="Jeep" foo="4400">Jeep</option>
+<option value="Kia" foo="4500">Kia</option>
+<option value="KTM" foo="4600">KTM</option>
+<option value="Lada" foo="4700">Lada</option>
+<option value="Lamborghini" foo="4800">Lamborghini</option>
+<option value="Lancia" foo="4900">Lancia</option>
+<option value="LandRover" foo="5000">Land Rover</option>
+<option value="LandWind" foo="5100">LandWind</option>
+<option value="Lexus" foo="5200">Lexus</option>
+<option value="Ligier" foo="5300">Ligier</option>
+<option value="Lincoln" foo="5400">Lincoln</option>
+<option value="London Taxi" foo="5500">London Taxi</option>
+<option value="Lotus" foo="5600">Lotus</option>
+<option value="LuAZ" foo="5650">LuAZ</option>
+<option value="Mahindra" foo="5700">Mahindra</option>
+<option value="Maruti" foo="5800">Maruti</option>
+<option value="Maserati" foo="5900">Maserati</option>
+<option value="Maybach" foo="6000">Maybach</option>
+<option value="Mazda" foo="6100">Mazda</option>
+<option value="McLaren" foo="6200">McLaren</option>
+<option value="Mercedes-Benz" foo="6300">Mercedes-Benz</option>
+<option value="MG" foo="6400">MG</option>
+<option value="Microcar" foo="6500">Microcar</option>
+<option value="Mini" foo="6600">Mini</option>
+<option value="Mitsubishi" foo="6700">Mitsubishi</option>
+<option value="Morgan" foo="6800">Morgan</option>
+<option value="Moskvič" foo="6900">Moskvič</option>
+<option value="Nissan" foo="7000">Nissan</option>
+<option value="NSU" foo="7100">NSU</option>
+<option value="Oldsmobile" foo="7200">Oldsmobile</option>
+<option value="Opel" foo="7300">Opel</option>
+<option value="Peugeot" foo="7400">Peugeot</option>
+<option value="Piaggio" foo="7500">Piaggio</option>
+<option value="Plymouth" foo="7600">Plymouth</option>
+<option value="Pontiac" foo="7700">Pontiac</option>
+<option value="Porsche" foo="7800">Porsche</option>
+<option value="Proton" foo="7900">Proton</option>
+<option value="Puch" foo="8000">Puch</option>
+<option value="Renault" foo="8100">Renault</option>
+<option value="Replica" foo="8150">Replica</option>
+<option value="Rolls-Royce" foo="8200">Rolls-Royce</option>
+<option value="Rover" foo="8300">Rover</option>
+<option value="Saab" foo="8400">Saab</option>
+<option value="Saturn" foo="8500">Saturn</option>
+<option value="Seat" foo="8600">SEAT</option>
+<option value="Shuanghuan" foo="8700">Shuanghuan</option>
+<option value="Simca" foo="8800">Simca</option>
+<option value="Smart" foo="8900">Smart</option>
+<option value="Spyker" foo="9000">Spyker</option>
+<option value="SsangYong" foo="9100">SsangYong</option>
+<option value="Subaru" foo="9200">Subaru</option>
+<option value="Suzuki" foo="9300">Suzuki</option>
+<option value="Škoda" foo="9400">Škoda</option>
+<option value="Talbot" foo="9500">Talbot</option>
+<option value="Tata" foo="9600">Tata</option>
+<option value="Tavria" foo="9700">Tavria</option>
+<option value="Tazzari" foo="9800">Tazzari</option>
+<option value="Tesla" foo="9900">Tesla</option>
+<option value="Toyota" foo="10000">Toyota</option>
+<option value="Trabant" foo="10100">Trabant</option>
+<option value="Triumph" foo="10200">Triumph</option>
+<option value="TVR" foo="10300">TVR</option>
+<option value="UAZ" foo="10450">UAZ</option>
+<option value="Vauxhall" foo="10460">Vauxhall</option>
+<option value="Venturi" foo="10500">Venturi</option>
+<option value="Volga" foo="10600">Volga</option>
+<option value="Volvo" foo="10700">Volvo</option>
+<option value="Volkswagen" foo="10800">Volkswagen</option>
+<option value="Wartburg" foo="10900">Wartburg</option>
+<option value="Westfield" foo="11000">Westfield</option>
+<option value="Wiesmann" foo="11100">Wiesmann</option>
+<option value="Zastava" foo="11200">Zastava</option>
+<option value="ZAZ" foo="11300">ZAZ</option>
+            </select>
+        </div>
+         
+         <div class="InnerDivMargin"><span></span></div>
+         <div class="Select Form6">
+                    <select name="cenaMax" size="1">
+                    <option value="999999" >Cena do</option>
+                    <option value="4000">do 4.000 EUR </option>
+                    <option value="8000">do 8.000 EUR </option>
+                    <option value="12000">do 12.000 EUR </option>
+                    <option value="16000">do 16.000 EUR </option>
+                    <option value="20000">do 20.000 EUR </option>                  
+                    </select>                   
+        </div>         
+       <div class="Select Form6 MarginL">
+                 <select name="kmMax" size="1">
+                  <option value="9999999">Prevoženih km do</option>
+                  <option value="20000">do 20000 km</option>
+                  <option value="50000">do 50000 km</option>
+                  <option value="100000">do 100000 km</option>
+                  <option value="150000">do 150000 km</option>
+                  <option value="200000">do 200000 km</option>
+
+                </select>
+         </div>
+           <div class="Select Form6 MarginL">
+                    <select name="bencin" size="1">
+                    <option value="0">Gorivo</option>
+                    <option value="201">bencin</option>
+                    <option value="202">diesel</option>
+                    </select>
+            </div>
+</div>
+         
+      
+
+<script>
+   /* When the user clicks on the button,
+   toggle between hiding and showing the dropdown content */
+   function myFunction() {
+      document.getElementById("myDropdown").classList.toggle("show");
+   }
+   
+   function filterFunction() {
+      var input, filter, ul, li, a, i;
+      input = document.getElementById("myInput");
+      filter = input.value.toUpperCase();
+      div = document.getElementById("myDropdown");
+      a = div.getElementsByTagName("a");
+      for (i = 0; i < a.length; i++) {
+         txtValue = a[i].textContent || a[i].innerText;
+         if (txtValue.toUpperCase().indexOf(filter) > -1) {
+         a[i].style.display = "";
+         } else {
+         a[i].style.display = "none";
+         }
+      }
+   }
+   </script>
+   
+   
+
+
+   <table cellpadding="0" cellspacing="0" border="1">
+         <tr>
+            <th>Znamka</th>
+            <th>Model</th>
+            <th>Gorivo</th>
+            <th>Prevoženi km</th>
+            <th>Velikost motorja(ccm)</th>
+            <th>Kw</th>
+            <th>Izklicna cena</th>
+            <th>Tvoja ponudba</th>
+            <th>Oddaja</th>
+         </tr>
+         %for (znamka,model, gorivo, prevozeni_kilometri, velikost_motorja, kw, cena) in avto:
+           <tr>
+              <td>{{znamka}}</td>
+              <td>{{model}}</td>
+              <td>{{gorivo}}</td>
+              <td>{{prevozeni_kilometri}}</td>
+              <td>{{velikost_motorja}}</td>
+              <td>{{kw}}</td>
+              <td>{{cena}}</td>
+              <td><input type="ponudba" class="form-control" placeholder="Nova ponudba" name="ponudba" required></td>
+              <td><button class="btn btn-lg btn-primary btn-block" type="submit">Ponudba</button></td>
+           </tr>
+         %end
+         </table>

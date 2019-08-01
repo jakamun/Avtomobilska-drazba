@@ -108,6 +108,25 @@ def login_post():
         response.set_cookie('username', username, path='/', secret=secret)
         redirect("/")
 
+@get("/novo_geslo/")
+def novo_geslo_get():
+    """Prikaži formo za geslo."""
+    return template("novo_geslo.html", username=None, napaka=None)
+
+
+@post("/novo_geslo/")
+def novo_geslo_post():
+    username = request.forms.username
+    password = password_md5(request.forms.password)
+    c = conn.cursor()
+    c.execute("SELECT 1 FROM oseba WHERE username=%s", [username])
+    if c.fetchone() is None:
+        # Uporabnik ne obstaja
+        return template("novo_geslo.html", username=None, napaka='To uporabniško ime ne obstaja.')
+    else:   
+        c.execute("UPDATE oseba SET password=%s WHERE username=%s",
+              [password, username])
+    redirect('/')
 
 @get("/logout/")
 def logout():
@@ -166,13 +185,13 @@ def register_post():
             # Daj uporabniku cookie
             response.set_cookie('username', username, path='/', secret=secret)
             redirect("/")
-    elif je_cenilec == 'FALSE':
-        if cena != '':
-            return template("register.html", ime=ime, priimek=priimek, racun=racun, rojstvo=rojstvo, kraj=kraj, 
-            je_cenilec=je_cenilec, cena=cena, ocena=ocena, username=username, napaka='Če nisi cenilec ne moreš podati cene')
-        elif ocena != '':
-            return template("register.html", ime=ime, priimek=priimek, racun=racun, rojstvo=rojstvo, kraj=kraj, 
-            je_cenilec=je_cenilec, cena=cena, ocena=ocena, username=username, napaka='Če nisi cenilec ne podaš ocene')
+    elif je_cenilec == 'FALSE' and cena == '' and ocena == '':
+        password = password_md5(password1)
+        c.execute("INSERT INTO oseba (ime, priimek, racun, rojstvo, kraj, je_cenilec, cena, ocena, username, password) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                  (ime, priimek, racun, rojstvo, kraj, je_cenilec, None, None, username, password))
+        # Daj uporabniku cookie
+        response.set_cookie('username', username, path='/', secret=secret)
+        redirect("/")
     else:
         # Vse je v redu, vstavi novega uporabnika v bazo
         password = password_md5(password1)
