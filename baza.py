@@ -94,20 +94,29 @@ def avtomobili_filter():
                 7 *['%' + search + '%'])
     return template('avtomobili.html', avto=cur, ponudba=None, username=username[0])
 
-@get('/avto/:x')
+@get('/avto/:x/')
 def avto_get(x):
     username = get_user()
     cur.execute("SELECT id_avto, znamka, model, gorivo, prevozeni_kilometri, velikost_motorja, kw, cena  FROM avtomobil AS avto" +
     " JOIN model ON avto.id_model = model.id_model" +
+    " JOIN znamka ON znamka.id_znamka = model.id_znamka WHERE id_avto=%s", [int(x)])
+    sez = cur.fetchone()
+    return template('avto.html', x=x, znamka=sez[1], model=sez[2], gorivo=sez[3], prevozeni_kilometri=sez[4], velikost_motorja=sez[5], kw=sez[6], cena=sez[7], ponudba=None, username=username[0])
+
+@post('/avto/:x/')
+def avto_post(x):
+    username = get_user()
+    ponudba = request.forms.ponudba
+    cur.execute("SELECT id_avto, znamka, model, gorivo, prevozeni_kilometri, velikost_motorja, kw, cena  FROM avtomobil AS avto" +
+    " JOIN model ON avto.id_model = model.id_model" +
     " JOIN znamka ON znamka.id_znamka = model.id_znamka WHERE id_avto=%s", [x])
     sez = cur.fetchone()
-    znamka = sez[1]
-    model = sez[2]
-    prevozeni_kilometri = sez[3]
-    velikost_motorja = sez[4]
-    kw = sez[5]
-    cena = sez[6]
-    return template('avto.html', x=x, znamka=znamka, model=model, gorivo=gorivo, prevozeni_kilometri=prevozeni_kilometri, velikost_motorja=velikost_motorja, kw=kw, cena=cena, username=username[0])
+    cur.execute("SELECT id_oseba FROM oseba WHERE username=%s", [username])
+    ponudnik = cur.fetchone()[0]
+    cur.execute("INSERT INTO ponudba (ponudnik, avto, ponujena_cena) VALUES (%s, %s, %s)",
+                  [ponudnik, x, int(ponudba)])
+    return template('avto.html', x=x, znamka=sez[1], model=sez[2], gorivo=sez[3], prevozeni_kilometri=sez[4], velikost_motorja=sez[5], kw=sez[6], cena=sez[7], ponudba=None, username=username[0])
+
 
 @get("/login/")
 def login_get():

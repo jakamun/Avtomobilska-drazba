@@ -1,4 +1,13 @@
-%rebase('base.html', naslov='Informacije {}'.format(x))
+%rebase('base.html')
+<style>
+    #podatki{
+    width:100%;
+    }
+
+    #razsirjene{
+    padding: 13px;
+    }
+</style>
 
 <table cellpading="0" cellspacing="0" border="1">
     <tr>
@@ -20,3 +29,15 @@
               <td>{{cena}}</td>
            </tr>
 </table>
+
+<div class="container">
+    <form class="form-signin" role="form" method="post" action=".">
+            <input type="ponudba" class="form-control" placeholder="Ponudba"
+            %if username:
+            value="{{ponudba}}"
+            %end
+            name="ponudba"
+            required autofocus>
+            <button class="btn btn-lg btn-primary btn-block" type="submit">Oddaj ponudbo</button>
+    </form>
+</div>
