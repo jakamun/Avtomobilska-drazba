@@ -101,7 +101,8 @@ def avto_get(x):
     " JOIN model ON avto.id_model = model.id_model" +
     " JOIN znamka ON znamka.id_znamka = model.id_znamka WHERE id_avto=%s", [int(x)])
     sez = cur.fetchone()
-    return template('avto.html', x=x, znamka=sez[1], model=sez[2], gorivo=sez[3], prevozeni_kilometri=sez[4], velikost_motorja=sez[5], kw=sez[6], cena=sez[7], ponudba=None, username=username[0])
+    cur.execute("SELECT ponudnik, ponujena_cena FROM ponudba AS ponudbe WHERE avto=%s", [x])
+    return template('avto.html', x=x, ponudbe=cur, znamka=sez[1], model=sez[2], gorivo=sez[3], prevozeni_kilometri=sez[4], velikost_motorja=sez[5], kw=sez[6], cena=sez[7], ponudba=None, username=username[0])
 
 @post('/avto/:x/')
 def avto_post(x):
@@ -115,7 +116,8 @@ def avto_post(x):
     ponudnik = cur.fetchone()[0]
     cur.execute("INSERT INTO ponudba (ponudnik, avto, ponujena_cena) VALUES (%s, %s, %s)",
                   [ponudnik, x, int(ponudba)])
-    return template('avto.html', x=x, znamka=sez[1], model=sez[2], gorivo=sez[3], prevozeni_kilometri=sez[4], velikost_motorja=sez[5], kw=sez[6], cena=sez[7], ponudba=None, username=username[0])
+    cur.execute("SELECT ponudnik, ponujena_cena FROM ponudba AS ponudbe WHERE avto=%s", [x])
+    return template('avto.html', x=x, ponudbe=cur, znamka=sez[1], model=sez[2], gorivo=sez[3], prevozeni_kilometri=sez[4], velikost_motorja=sez[5], kw=sez[6], cena=sez[7], ponudba=None, username=username[0])
 
 
 @get("/login/")

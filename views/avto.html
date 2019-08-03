@@ -30,6 +30,19 @@
            </tr>
 </table>
 
+<table cellpading="0" cellspacing="0" border="1">
+    <tr>
+        <th>Ponudnik</th>
+        <th>Ponujena cena</th>
+    </tr>
+    %for (ponudnik, ponujena_cena) in ponudbe:
+    <tr>
+        <td>{{ponudnik}}</td>
+        <td>{{ponujena_cena}}</td>
+    </tr>
+    %end
+</table>
+
 <div class="container">
     <form class="form-signin" role="form" method="post" action=".">
             <input type="ponudba" class="form-control" placeholder="Ponudba"
