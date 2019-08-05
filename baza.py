@@ -263,7 +263,7 @@ def get_komentar():
     useers = []
     for user in users:
         useers += user
-    return template("sporocilo.html", username=username, sporocila=sporocila, pogovori=pogovori, useers=useers)
+    return template("sporocilo.html", username=username[0], sporocila=sporocila, pogovori=pogovori, useers=useers)
 
 @post("/sporocilo/")
 def post_komentar():
@@ -278,7 +278,36 @@ def post_komentar():
               [id_oseba, id_user, spor])
     return redirect("/sporocilo/")
 
+@get("/user/:x/")
+def uporabnik(x):
+    username = get_user()
+    cur.execute("""SELECT id_avto, znamka, model, gorivo, prevozeni_kilometri, velikost_motorja, kw, ponujena_cena FROM ponudba
+                JOIN oseba ON ponudba.ponudnik = oseba.id_oseba 
+                JOIN avtomobil ON ponudba.avto = avtomobil.id_avto
+                JOIN model ON model.id_model = avtomobil.id_model
+                JOIN znamka ON znamka.id_znamka = model.id_znamka
+                WHERE username=%s""", [username])
+    return template('user.html', ponudba=cur, username=username[0])
 
+@get("/cenilci/")
+def get_cenilci():
+    username = get_user()
+    cur.execute("""SELECT id_oseba, ime, priimek, racun, kraj, ocena, cena FROM oseba where je_cenilec=TRUE""")
+    return template('cenilci.html', oseba=cur, username=username)
+
+@get("/cenilec/:x/")
+def get_cenilec(x):
+    username = get_user()
+    cur.execute("SELECT ime, priimek, racun, kraj, ocena, cena, username FROM oseba WHERE id_oseba=%s", [x])
+    sez = cur.fetchone()
+    return template('cenilec.html',ime=sez[0], priimek=sez[1], racun=sez[2], kraj=sez[3], ocena=sez[4], cena=sez[5], uporabnik=sez[6], username=username)
+
+@post("/cenilec/:x/")
+def post_cenilec(x):
+    username = get_user()
+    ocena = request.forms.ocena
+    cur.execute("INSERT INTO ocena_cenilca (id_cenilec, dana_ocena) VALUES (%s, %s)", [x, ocena])
+    return redirect("/cenilci/")
 
 ######################################################################
 # Glavni program

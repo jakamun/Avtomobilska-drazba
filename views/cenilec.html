@@ -1,0 +1,43 @@
+%rebase('base.html')
+<style>
+    #podatki{
+    width:100%;
+    }
+
+    #razsirjene{
+    padding: 13px;
+    }
+</style>
+
+<table cellpading="0" cellspacing="0" border="1">
+        <tr>
+            <th>Ime</th>
+            <th>Priimek</th>
+            <th>TRR</th>
+            <th>Kraj</th>
+            <th>Ocena cenilca</th>
+            <th>Cena cenilca</th>
+            <th>Uporabniško ime</th>
+        </tr>
+        <tr>
+            <td>{{ime}}</td>
+            <td>{{priimek}}</td>
+            <td>{{racun}}</td>
+            <td>{{kraj}}</td>
+            <td>{{ocena}}</td>
+            <td>{{cena}}</td>
+            <td>{{uporabnik}}</td>
+        </tr>
+    </table>
+
+<div class="container">
+    <form class="form-signin" role="form" method="post" action=".">
+            <input type="ocena" class="form-control" placeholder="Ocena cenilca"
+            %if username:
+            value="{{ocena}}"
+            %end
+            name="ocena"
+            required autofocus>
+            <button class="btn btn-lg btn-primary btn-block" type="submit">Oddaj oceno</button>
+    </form>
+</div>
