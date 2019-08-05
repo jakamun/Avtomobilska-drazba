@@ -1,0 +1,101 @@
+%rebase('base.html')
+
+<link rel="stylesheet" href="../static/css/sb-admin-2.css">
+
+<div class="row px-5">
+    <div class="col-lg-12">
+<a href="#novosporocilo">Novo sporočilo</a>
+</div>
+</div>
+<p>
+
+
+</p>
+
+<div class="row px-5">
+    <div class="col-lg-12">
+%for pogovor in pogovori:
+<div class="card shadow mb-4">
+                <!-- Card Header - Accordion -->
+                <a href="#collapseCardExample" class="d-block card-header py-3" data-toggle="collapse" role="button" aria-expanded="true" aria-controls="collapseCardExample">
+                  <h6 class="m-0 font-weight-bold text-primary"></h6>
+                  </a>
+                  <div class="collapse show" id="collapseCardExample">
+                  <div class="card-body">
+
+                        <table>
+                          <col width="180">
+                          <col width="180">
+                          <col width="180">
+                          <col width="180">
+                          <tr>
+                            <th>Čas</th>
+                            <th>Prejemnik</th>
+                            <th>Pošiljatelj</th>
+                            <th>Sporočilo</th>
+                          </tr>
+                       %for (cas,  prejemnik, posiljatelj, s) in sporocila:
+                        %if posiljatelj == pogovor or prejemnik == pogovor:
+                          <tr>
+                            <td>{{ cas }}</td>
+                            <td>{{ posiljatelj }}</td>
+                            <td>{{ prejemnik }}</td>
+                            <td>{{ s }}</td>
+                          </tr>
+                        %end
+                       %end
+                        </table>
+
+
+                <!-- Card Content - Collapse -->
+                </div>
+                </div>
+              </div>
+
+
+%end
+</div>
+</div>
+
+<div class="row px-5">
+    <div class="col-lg-12">
+<div class="card o-hidden border-0 shadow-lg my-5" id="novosporocilo">   
+        <div class="card-body p-0">
+          <!-- Nested Row within Card Body -->
+          <div class="row">
+            <div class="col-lg-6">
+              <div class="p-3">
+                  <strong>NOVO SPOROČILO</strong>
+                  <p>
+
+                  </p>
+                <form class="user" role="form" method="post" action="." >
+                    <span class="label-input100">Pošiljatelj:</span>
+                    <input type="jaz" class="form-control form-control-user"
+                    value = "{{username}}"
+                    name = "jaz" readonly>
+                    <span class="label-input100">Prejemnik:</span><br>
+
+                    <select name="user">
+                    %for user in useers:
+                    <option value="{{user}}">{{user}}</option>
+                    %end
+                    </select> <br>
+                    <p></p>
+                    <span class="label-input100">Sporočilo:</span>
+                        <textarea class="spor" name="spor" class="md-textarea form-control rounded" rows="1" cols="65" border-radius="1rem"></textarea>
+                        <p></p>
+                    <button class="btn btn-primary btn-user btn-block" type="submit">
+                        Pošlji!
+                    </button>
+                </form>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>

@@ -241,6 +241,45 @@ def register_post():
         redirect("/")
 
 
+@get("/sporocilo/")
+def get_komentar():
+    username = get_user()
+    cur.execute("SELECT id_oseba FROM oseba WHERE username=%s", [username])
+    id_oseba = cur.fetchone()[0]
+    cur.execute(
+    """SELECT cas, komentator, prejemnik, sporocilo
+       FROM komentar
+       WHERE (prejemnik = %s OR komentator = %s)
+       ORDER BY cas desc""", [id_oseba, id_oseba])
+    sporocila = tuple(cur)
+    pogovori = []
+    for (cas, prejemnik, posiljatelj, sporocilo) in sporocila:
+        if (prejemnik != username) and (prejemnik not in pogovori):
+            pogovori.append(prejemnik)
+        elif (posiljatelj != username) and (posiljatelj not in pogovori):
+            pogovori.append(posiljatelj)
+    cur.execute("""SELECT username FROM oseba""")
+    users = tuple(cur)
+    useers = []
+    for user in users:
+        useers += user
+    return template("sporocilo.html", username=username, sporocila=sporocila, pogovori=pogovori, useers=useers)
+
+@post("/sporocilo/")
+def post_komentar():
+    username = get_user()
+    cur.execute("SELECT id_oseba FROM oseba WHERE username=%s", [username])
+    id_oseba = cur.fetchone()[0]
+    user = request.forms.user
+    cur.execute("SELECT id_oseba FROM oseba WHERE username=%s", [user])
+    id_user = cur.fetchone()[0]
+    spor = request.forms.spor
+    cur.execute("INSERT INTO komentar (komentator, prejemnik, sporocilo) VALUES (%s, %s, %s)",
+              [id_oseba, id_user, spor])
+    return redirect("/sporocilo/")
+
+
+
 ######################################################################
 # Glavni program
 

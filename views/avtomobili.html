@@ -5,41 +5,34 @@
    <i class="fas fa-search" aria-hidden="true"></i>
    
    <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Najdi</button>
-   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="mx-3" role="img" viewBox="0 0 24 24" focusable="false"
-        data-toggle="popover" data-trigger="hover" data-placement="right" data-html="true"
-        data-content="Napredno iskanje:
-        <br/>'Ime stolpca' : 'iskalni parameter'
-        <br/>Na primer:
-        <br/>FIS code : 5658
-        <br/>Ime : Peter">
-       <circle cx="10.5" cy="10.5" r="7.5"/><path d="M21 21l-5.2-5.2"/></svg>
 </form>
 
    
    
 
-
-   <table cellpadding="1" cellspacing="1" border="1", width="100%">
+<div style="overflow-x:auto;">
+<table>
+      <tr>
+         <th>ID</th>
+         <th>Znamka</th>
+         <th>Model</th>
+         <th>Gorivo</th>
+         <th>Prevoženi km</th>
+         <th>Velikost motorja(ccm)</th>
+         <th>Kw</th>
+         <th>Izklicna cena</th>
+      </tr>
+      %for (id_avto, znamka,model, gorivo, prevozeni_kilometri, velikost_motorja, kw, cena) in avto:
          <tr>
-            <th>ID</th>
-            <th>Znamka</th>
-            <th>Model</th>
-            <th>Gorivo</th>
-            <th>Prevoženi km</th>
-            <th>Velikost motorja(ccm)</th>
-            <th>Kw</th>
-            <th>Izklicna cena</th>
+            <td><a href="/avto/{{id_avto}}/">{{id_avto}}</a></td>
+            <td>{{znamka}}</td>
+            <td>{{model}}</td>
+            <td>{{gorivo}}</td>
+            <td>{{prevozeni_kilometri}}</td>
+            <td>{{velikost_motorja}}</td>
+            <td>{{kw}}</td>
+            <td>{{cena}}</td>
          </tr>
-         %for (id_avto, znamka,model, gorivo, prevozeni_kilometri, velikost_motorja, kw, cena) in avto:
-           <tr>
-              <td><a href="/avto/{{id_avto}}/">{{id_avto}}</a></td>
-              <td>{{znamka}}</td>
-              <td>{{model}}</td>
-              <td>{{gorivo}}</td>
-              <td>{{prevozeni_kilometri}}</td>
-              <td>{{velikost_motorja}}</td>
-              <td>{{kw}}</td>
-              <td>{{cena}}</td>
-           </tr>
-         %end
-         </table>
+      %end
+      </table>
+   </div>
