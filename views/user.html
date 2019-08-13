@@ -15,9 +15,11 @@
            <th>Prevoženi km</th>
            <th>Velikost motorja(ccm)</th>
            <th>Kw</th>
+           <th>Izklicna cena</th>
            <th>Ponujena cena</th>
+           <th>Največja ponujena cena</th>
         </tr>
-        %for (id_avto, znamka, model, gorivo, prevozeni_kilometri, velikost_motorja, kw, ponujena_cena) in ponudba:
+        %for (id_avto, znamka, model, gorivo, prevozeni_kilometri, velikost_motorja, kw, izklicna_cena, ponujena_cena, max_cena) in ponudba:
            <tr>
               <td><a href="/avto/{{id_avto}}/">{{id_avto}}</a></td>
               <td>{{znamka}}</td>
@@ -26,7 +28,9 @@
               <td>{{prevozeni_kilometri}}</td>
               <td>{{velikost_motorja}}</td>
               <td>{{kw}}</td>
+              <td>{{izklicna_cena}}</td>
               <td>{{ponujena_cena}}</td>
+              <td>{{max_cena}}</td>
            </tr>
         %end
         </table>

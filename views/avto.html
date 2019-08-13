@@ -9,42 +9,78 @@
     }
 </style>
 
-<table cellpading="0" cellspacing="0" border="1">
-    <tr>
-        <th>Znamka</th>
-        <th>Model</th>
-        <th>Gorivo</th>
-        <th>Prevoženi km</th>
-        <th>Velikost motorja(ccm)</th>
-        <th>Kw</th>
-        <th>Izklicna cena</th>
-    </tr>
-           <tr>
-              <td>{{znamka}}</td>
-              <td>{{model}}</td>
-              <td>{{gorivo}}</td>
-              <td>{{prevozeni_kilometri}}</td>
-              <td>{{velikost_motorja}}</td>
-              <td>{{kw}}</td>
-              <td>{{cena}}</td>
-           </tr>
-</table>
-
-<table cellpading="0" cellspacing="0" border="1">
-    <tr>
-        <th>Ponudnik</th>
-        <th>Ponujena cena</th>
-    </tr>
-    %for (ponudnik, ponujena_cena) in ponudbe:
-    <tr>
-        <td>{{ponudnik}}</td>
-        <td>{{ponujena_cena}}</td>
-    </tr>
+<div class="container">
+    %if napaka:
+        <div class="alert alert-warning">
+            <h3><center>{{napaka}}</center></h3>
+        </div>
     %end
-</table>
+</div>
 
 <div class="container">
-    <form class="form-signin" role="form" method="post" action=".">
+    %if len(ponudbe) == 0:
+    <div>
+        <h4><center>{{"Ni še podane ponudbe"}}</center></h4>
+    </div>
+    %else:
+    <table cellpading="0" cellspacing="0" border="1">
+        <tr>
+            <th>Cas od zadnje ponudbe</th>
+            <th>Maksimalna ponudba</th>
+        </tr>
+        <tr>
+            <td>{{cas}}</td>
+            <td>{{max_ponudba}}</td>
+        </tr>
+    </table>
+    %end
+</div>
+
+<div>
+    <table cellpading="0" cellspacing="0" border="1">
+        <tr>
+            <th>Znamka</th>
+            <th>Model</th>
+            <th>Gorivo</th>
+            <th>Prevoženi km</th>
+            <th>Velikost motorja(ccm)</th>
+            <th>Kw</th>
+            <th>Izklicna cena</th>
+        </tr>
+        <tr>
+            <td>{{avto[0]}}</td>
+            <td>{{avto[1]}}</td>
+            <td>{{avto[2]}}</td>
+            <td>{{avto[3]}}</td>
+            <td>{{avto[4]}}</td>
+            <td>{{avto[5]}}</td>
+            <td>{{avto[6]}}</td>
+        </tr>
+    </table>
+</div>
+
+<div>
+    %if len(ponudbe) >0:
+        <table cellpading="0" cellspacing="0" border="1">
+            <tr>
+                <th>Ponudnik</th>
+                <th>Čas oddane ponudbe</th>
+                <th>Ponujena cena</th>
+            </tr>
+            %for (ponudnik, cas, ponujena_cena) in ponudbe:
+            <tr>
+                <td>{{ponudnik}}</td>
+                <td>{{cas}}</td>
+                <td>{{ponujena_cena}}</td>
+            </tr>
+            %end
+        </table>
+    %end
+</div>
+
+<center>
+    <div class="container">
+        <form class="form-signin" role="form" method="post" action=".">
             <input type="ponudba" class="form-control" placeholder="Ponudba"
             %if username:
             value="{{ponudba}}"
@@ -52,5 +88,7 @@
             name="ponudba"
             required autofocus>
             <button class="btn btn-lg btn-primary btn-block" type="submit">Oddaj ponudbo</button>
-    </form>
-</div>
+        </form>
+    </div>
+</center>
+

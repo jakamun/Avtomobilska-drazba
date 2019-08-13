@@ -4,6 +4,7 @@
 # uvozimo bottle.py
 from bottle import *
 import hashlib
+import datetime
 
 # uvozimo ustrezne podatke za povezavo
 import auth_public as auth
@@ -60,6 +61,10 @@ def get_user(auto_login = True):
     else:
         return None
 
+def potekel_cas(cas):
+    trenutni_cas = datetime.datetime.now()
+    return trenutni_cas - cas
+
 
 @get("/")
 def main():
@@ -97,27 +102,67 @@ def avtomobili_filter():
 @get('/avto/:x/')
 def avto_get(x):
     username = get_user()
-    cur.execute("SELECT id_avto, znamka, model, gorivo, prevozeni_kilometri, velikost_motorja, kw, cena  FROM avtomobil AS avto" +
+    cur.execute("SELECT znamka, model, gorivo, prevozeni_kilometri, velikost_motorja, kw, cena  FROM avtomobil AS avto" +
     " JOIN model ON avto.id_model = model.id_model" +
     " JOIN znamka ON znamka.id_znamka = model.id_znamka WHERE id_avto=%s", [int(x)])
-    sez = cur.fetchone()
-    cur.execute("SELECT ponudnik, ponujena_cena FROM ponudba AS ponudbe WHERE avto=%s", [x])
-    return template('avto.html', x=x, ponudbe=cur, znamka=sez[1], model=sez[2], gorivo=sez[3], prevozeni_kilometri=sez[4], velikost_motorja=sez[5], kw=sez[6], cena=sez[7], ponudba=None, username=username[0])
+    avto = cur.fetchone()
+    cur.execute("SELECT username, cas, ponujena_cena FROM ponudba" +
+                " JOIN oseba ON ponudba.ponudnik=oseba.id_oseba" +
+                " WHERE avto = %s", [x])
+    ponudbe = cur.fetchall()
+    cur.execute("SELECT MAX(cas) FROM ponudba WHERE avto=%s", [x])
+    zadnja_ponudba = cur.fetchone()[0]
+    cur.execute("SELECT MAX(ponujena_cena) FROM ponudba WHERE avto=%s", [x])
+    max_ponudba = cur.fetchone()
+    if (len(ponudbe) > 0) and (potekel_cas(zadnja_ponudba) >= datetime.timedelta(days=5)):
+        return template('avto.html', x=x, ponudbe=ponudbe, avto=avto, username=username[0], cas=potekel_cas(zadnja_ponudba),
+                        max_ponudba=max_ponudba[0], ponudba=None, napaka = 'Dražba je zaključena')
+    elif len(ponudbe) > 0:
+        return template('avto.html', x=x, ponudbe=ponudbe, avto=avto, username = username[0], cas=potekel_cas(zadnja_ponudba), 
+                        max_ponudba=max_ponudba[0], ponudba=None, napaka = None)
+    else:
+        return template('avto.html', x=x, ponudbe=ponudbe, avto=avto, username = username[0], cas=None, max_ponudba=max_ponudba[0], ponudba=None, napaka = None)
 
 @post('/avto/:x/')
 def avto_post(x):
     username = get_user()
     ponudba = request.forms.ponudba
-    cur.execute("SELECT id_avto, znamka, model, gorivo, prevozeni_kilometri, velikost_motorja, kw, cena  FROM avtomobil AS avto" +
-    " JOIN model ON avto.id_model = model.id_model" +
-    " JOIN znamka ON znamka.id_znamka = model.id_znamka WHERE id_avto=%s", [x])
-    sez = cur.fetchone()
-    cur.execute("SELECT id_oseba FROM oseba WHERE username=%s", [username])
-    ponudnik = cur.fetchone()[0]
-    cur.execute("INSERT INTO ponudba (ponudnik, avto, ponujena_cena) VALUES (%s, %s, %s)",
-                  [ponudnik, x, int(ponudba)])
-    cur.execute("SELECT ponudnik, ponujena_cena FROM ponudba AS ponudbe WHERE avto=%s", [x])
-    return template('avto.html', x=x, ponudbe=cur, znamka=sez[1], model=sez[2], gorivo=sez[3], prevozeni_kilometri=sez[4], velikost_motorja=sez[5], kw=sez[6], cena=sez[7], ponudba=None, username=username[0])
+    cur.execute("SELECT znamka, model, gorivo, prevozeni_kilometri, velikost_motorja, kw, cena  FROM avtomobil AS avto" +
+        " JOIN model ON avto.id_model = model.id_model" +
+        " JOIN znamka ON znamka.id_znamka = model.id_znamka WHERE id_avto=%s", [x])
+    avto = cur.fetchone()
+    cur.execute("SELECT username, cas, ponujena_cena FROM ponudba" +
+                " JOIN oseba ON ponudba.ponudnik=oseba.id_oseba" +
+                " WHERE avto = %s", [x])
+    ponudbe = cur.fetchall()
+    cur.execute("SELECT MAX(cas) FROM ponudba WHERE avto=%s", [x])
+    zadnja_ponudba = cur.fetchone()[0]
+    cur.execute("SELECT MAX(ponujena_cena) FROM ponudba WHERE avto=%s", [x])
+    max_ponudba = cur.fetchone()[0]
+    if (len(ponudbe) > 0) and (potekel_cas(zadnja_ponudba) >= datetime.timedelta(days=5)):
+        return template('avto.html', x=x, ponudbe=ponudbe, avto=avto, username=username[0], cas=potekel_cas(zadnja_ponudba),
+                        max_ponudba=max_ponudba, ponudba=None, napaka = 'Dražba je zaključena')
+    elif (len(ponudbe) == 0) and (int(avto[-1]) > int(ponudba)):
+        return template('avto.html', x=x, ponudbe=ponudbe, avto=avto, ponudba=None, cas=None, 
+                        max_ponudba=max_ponudba, username=username[0], napaka = 'Ponudba mora biti višja od izklicne cene')
+    elif (len(ponudbe) > 0) and (int(ponudba) <= int(max_ponudba)):
+        return template('avto.html', x=x, ponudbe=ponudbe, avto=avto, ponudba=None, cas=potekel_cas(zadnja_ponudba),
+                        max_ponudba=max_ponudba, username=username[0], napaka='Ponuditi morate več od trenutne najvišje ponudbe')
+    else:
+        cur.execute("SELECT id_oseba FROM oseba WHERE username=%s", [username])
+        ponudnik = cur.fetchone()[0]
+        cur.execute("INSERT INTO ponudba (ponudnik, avto, ponujena_cena) VALUES (%s, %s, %s)",
+                    [ponudnik, x, int(ponudba)])
+        cur.execute("SELECT ponudnik, cas, ponujena_cena FROM ponudba AS ponudbe WHERE avto=%s", [x])
+        cur.execute("SELECT MAX(ponujena_cena) FROM ponudba WHERE avto=%s", [x])
+        max_ponudba = cur.fetchone()[0]
+        cur.execute("SELECT MAX(cas) FROM ponudba WHERE avto=%s", [x])
+        cur.execute("SELECT username, cas, ponujena_cena FROM ponudba" +
+                " JOIN oseba ON ponudba.ponudnik=oseba.id_oseba" +
+                " WHERE avto = %s", [x])
+        ponudbe = cur.fetchall()
+        return template('avto.html', x=x, ponudbe=ponudbe, avto=avto, ponudba=None, 
+                        cas=potekel_cas(zadnja_ponudba), max_ponudba=max_ponudba, username=username[0], napaka=None)
 
 
 @get("/login/")
@@ -281,12 +326,15 @@ def post_komentar():
 @get("/user/:x/")
 def uporabnik(x):
     username = get_user()
-    cur.execute("""SELECT id_avto, znamka, model, gorivo, prevozeni_kilometri, velikost_motorja, kw, ponujena_cena FROM ponudba
-                JOIN oseba ON ponudba.ponudnik = oseba.id_oseba 
-                JOIN avtomobil ON ponudba.avto = avtomobil.id_avto
-                JOIN model ON model.id_model = avtomobil.id_model
+    cur.execute("""SELECT id_avto, znamka, model, gorivo, prevozeni_kilometri, velikost_motorja, kw, cena, max_moja_ponudba, MAX(ponujena_cena) AS max_ponudba FROM avtomobil AS avto
+                JOIN model ON avto.id_model = model.id_model
                 JOIN znamka ON znamka.id_znamka = model.id_znamka
-                WHERE username=%s""", [username])
+                JOIN (SELECT avto, ponudnik, max(ponujena_cena) AS max_moja_ponudba FROM ponudba
+                JOIN oseba ON oseba.id_oseba=ponudba.ponudnik
+                WHERE username=%s
+                GROUP BY avto, ponudnik) AS pon ON avto.id_avto = pon.avto
+                JOIN ponudba ON ponudba.avto = avto.id_avto
+                GROUP BY id_avto, znamka, model, max_moja_ponudba""", [username])
     return template('user.html', ponudba=cur, username=username[0])
 
 @get("/cenilci/")
