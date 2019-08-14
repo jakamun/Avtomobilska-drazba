@@ -19,14 +19,14 @@
 
 <div class="container">
     %if len(ponudbe) == 0:
-    <div>
-        <h4><center>{{"Ni še podane ponudbe"}}</center></h4>
+    <div class="alert alert-warning">
+        <h3><center>{{"Ni še podane ponudbe"}}</center></h3>
     </div>
     %else:
     <table cellpading="0" cellspacing="0" border="1">
         <tr>
             <th>Cas od zadnje ponudbe</th>
-            <th>Maksimalna ponudba</th>
+            <th>Maksimalna ponudba(€)</th>
         </tr>
         <tr>
             <td>{{cas}}</td>
@@ -45,7 +45,7 @@
             <th>Prevoženi km</th>
             <th>Velikost motorja(ccm)</th>
             <th>Kw</th>
-            <th>Izklicna cena</th>
+            <th>Izklicna cena(€)</th>
         </tr>
         <tr>
             <td>{{avto[0]}}</td>
@@ -65,7 +65,7 @@
             <tr>
                 <th>Ponudnik</th>
                 <th>Čas oddane ponudbe</th>
-                <th>Ponujena cena</th>
+                <th>Ponujena cena(€)</th>
             </tr>
             %for (ponudnik, cas, ponujena_cena) in ponudbe:
             <tr>

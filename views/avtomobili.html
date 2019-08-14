@@ -21,9 +21,10 @@
          <th>Prevoženi km</th>
          <th>Velikost motorja(ccm)</th>
          <th>Kw</th>
-         <th>Izklicna cena</th>
+         <th>Izklicna cena(€)</th>
+         <th>Stanje</th>
       </tr>
-      %for (id_avto, znamka,model, gorivo, prevozeni_kilometri, velikost_motorja, kw, cena) in avto:
+      %for (id_avto, znamka,model, gorivo, prevozeni_kilometri, velikost_motorja, kw, cena, stanje) in avto:
          <tr>
             <td><a href="/avto/{{id_avto}}/">{{id_avto}}</a></td>
             <td>{{znamka}}</td>
@@ -33,6 +34,7 @@
             <td>{{velikost_motorja}}</td>
             <td>{{kw}}</td>
             <td>{{cena}}</td>
+            <td>{{stanje}}</td>
          </tr>
       %end
       </table>
