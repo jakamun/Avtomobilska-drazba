@@ -1,49 +1,101 @@
 <!DOCTYPE html>
-
 <html lang="si">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
+    <head>
+        <title>Pozabljeno geslo</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+      <!--===============================================================================================-->	
+        <link rel="icon" type="image/png" href="/static/Login_v16/images/icons/favicon.ico"/>
+      <!--===============================================================================================-->
+        <link rel="stylesheet" type="text/css" href="/static/Login_v16/vendor/bootstrap/css/bootstrap.min.css">
+      <!--===============================================================================================-->
+        <link rel="stylesheet" type="text/css" href="/static/Login_v16/fonts/font-awesome-4.7.0/css/font-awesome.min.css">
+      <!--===============================================================================================-->
+        <link rel="stylesheet" type="text/css" href="/static/Login_v16/fonts/Linearicons-Free-v1.0.0/icon-font.min.css">
+      <!--===============================================================================================-->
+        <link rel="stylesheet" type="text/css" href="/static/Login_v16/vendor/animate/animate.css">
+      <!--===============================================================================================-->	
+        <link rel="stylesheet" type="text/css" href="/static/Login_v16/vendor/css-hamburgers/hamburgers.min.css">
+      <!--===============================================================================================-->
+        <link rel="stylesheet" type="text/css" href="/static/Login_v16/vendor/animsition/css/animsition.min.css">
+      <!--===============================================================================================-->
+        <link rel="stylesheet" type="text/css" href="/static/Login_v16/vendor/select2/select2.min.css">
+      <!--===============================================================================================-->	
+        <link rel="stylesheet" type="text/css" href="/static/Login_v16/vendor/daterangepicker/daterangepicker.css">
+      <!--===============================================================================================-->
+        <link rel="stylesheet" type="text/css" href="/static/Login_v16/css/util.css">
+        <link rel="stylesheet" type="text/css" href="/static/Login_v16/css/main.css">
+      <!--===============================================================================================-->
+      </head>
 
-    <title>Pozabljeno geslo</title>
 
-    <!-- Bootstrap core CSS -->
-    <link href="/static/source/bootstrap-3.3.6-dist/css/bootstrap.min.css" rel="stylesheet">
+      <body>
+    
+          <div class="limiter">
+            
+              <div class="container-login100" style="background-image: url('/static/Login_v16/images/ozadje1.jpg');">
+                <div class="wrap-login100 p-t-30 p-b-50">
+                  <span class="login100-form-title p-b-41">
+                    Pozabljeno geslo
+                  </span>
+                  <form class="login100-form validate-form p-b-33 p-t-5" role="form" method="post" action=".">
+                      %if napaka:
+                      <div class="alert alert-warning">{{napaka}}</div>
+                      %end
+          
+                    <div class="wrap-input100 validate-input" data-validate = "Uporabniško ime">
+                        <input type="text" class="input100" placeholder="Uporabniško ime"
+                          %if username:
+                          value="{{username}}"
+                          %end
+                          name="username"
+                          required autofocus>
+                      <span class="focus-input100" data-placeholder="&#xe82a;"></span>
+                    </div>
+          
+                    <div class="wrap-input100 validate-input" data-validate="Vnesi geslo">
+                      <input type="password" class="input100" placeholder="Geslo" name="password" required>
+                      <span class="focus-input100" data-placeholder="&#xe80f;"></span>
+                    </div>
 
-    <!-- Custom styles for this template -->
-    <link href="/static/source/bootstrap-3.3.6-dist/css/bootstrap.min.css" rel="stylesheet">
+                    <div class="wrap-input100 validate-input" data-validate="Vnesi geslo">
+                        <input type="password" class="input100" placeholder="Ponovi geslo" name="password" required>
+                        <span class="focus-input100" data-placeholder="&#xe80f;"></span>
+                      </div>
+          
+                    <div class="container-login100-form-btn m-t-32">
+                      <button class="login100-form-btn" type="submit">Prijava</button>
+                    </div>
+                    
+                  </form>
+                </div>
+              </div>
+            </div>
+            
+          
+            <div id="dropDownSelect1"></div>   
 
-  
-  </head>
 
-  <body>
 
-    <div class="container">
-      <form class="form-signin" role="form" method="post" action=".">
-        <h2 class="form-signin-heading">Avtomobilska dražba</h2>
-        %if napaka:
-        <div class="alert alert-warning">{{napaka}}</div>
-        %end
-        <input type="username" class="form-control" placeholder="Uporabniško ime"
-               %if username:
-               value="{{username}}"
-               %end
-               name="username"
-               required autofocus>
-        <input type="password" class="form-control" placeholder="Geslo" name="password" required>
-        <input type="password" class="form-control" placeholder="Ponovi geslo" name="password" required>
-        <button class="btn btn-lg btn-primary btn-block" type="submit">Prijava</button>
-      
 
-      </form>
-    </div> <!-- /container -->
 
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-  </body>
+<!--===============================================================================================-->
+<script src="/static/Login_v16/vendor/jquery/jquery-3.2.1.min.js"></script>
+<!--===============================================================================================-->
+  <script src="/static/Login_v16/vendor/animsition/js/animsition.min.js"></script>
+<!--===============================================================================================-->
+  <script src="/static/Login_v16/vendor/bootstrap/js/popper.js"></script>
+  <script src="/static/Login_v16/vendor/bootstrap/js/bootstrap.min.js"></script>
+<!--===============================================================================================-->
+  <script src="/static/Login_v16/vendor/select2/select2.min.js"></script>
+<!--===============================================================================================-->
+  <script src="/static/Login_v16/vendor/daterangepicker/moment.min.js"></script>
+  <script src="/static/Login_v16/vendor/daterangepicker/daterangepicker.js"></script>
+<!--===============================================================================================-->
+  <script src="/static/Login_v16/vendor/countdowntime/countdowntime.js"></script>
+<!--===============================================================================================-->
+  <script src="/static/Login_v16/js/main.js"></script>
+
+</body>
 
 </html>

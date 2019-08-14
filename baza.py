@@ -9,6 +9,8 @@ import datetime
 # uvozimo ustrezne podatke za povezavo
 import auth_public as auth
 
+
+
 # uvozimo psycopg2
 import psycopg2, psycopg2.extensions, psycopg2.extras
 psycopg2.extensions.register_type(psycopg2.extensions.UNICODE) # se znebimo problemov s šumniki
@@ -101,6 +103,7 @@ def avtomobili_filter():
 
 @get('/avto/:x/')
 def avto_get(x):
+
     username = get_user()
     cur.execute("SELECT znamka, model, gorivo, prevozeni_kilometri, velikost_motorja, kw, cena  FROM avtomobil AS avto" +
     " JOIN model ON avto.id_model = model.id_model" +
@@ -134,6 +137,7 @@ def avto_post(x):
     cur.execute("SELECT username, cas, ponujena_cena FROM ponudba" +
                 " JOIN oseba ON ponudba.ponudnik=oseba.id_oseba" +
                 " WHERE avto = %s", [x])
+
     ponudbe = cur.fetchall()
     cur.execute("SELECT MAX(cas) FROM ponudba WHERE avto=%s", [x])
     zadnja_ponudba = cur.fetchone()[0]

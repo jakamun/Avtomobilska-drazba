@@ -1,108 +1,171 @@
 <!DOCTYPE html>
 <html lang="si">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
-
-    <title>Registracija</title>
-
-     <!-- Bootstrap core CSS -->
-     <link href="/static/assets/css/font-awesome.min.css" rel="stylesheet">
-
-     <!-- Custom styles for this template -->
-     <link href="/static/assets/css/main.css" rel="stylesheet">
- 
-  
-
-    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
-  </head>
+    <head>
+        <title>Registracija</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+      <!--===============================================================================================-->	
+        <link rel="icon" type="image/png" href="/static/Login_v16/images/icons/favicon.ico"/>
+      <!--===============================================================================================-->
+        <link rel="stylesheet" type="text/css" href="/static/Login_v16/vendor/bootstrap/css/bootstrap.min.css">
+      <!--===============================================================================================-->
+        <link rel="stylesheet" type="text/css" href="/static/Login_v16/fonts/font-awesome-4.7.0/css/font-awesome.min.css">
+      <!--===============================================================================================-->
+        <link rel="stylesheet" type="text/css" href="/static/Login_v16/fonts/Linearicons-Free-v1.0.0/icon-font.min.css">
+      <!--===============================================================================================-->
+        <link rel="stylesheet" type="text/css" href="/static/Login_v16/vendor/animate/animate.css">
+      <!--===============================================================================================-->	
+        <link rel="stylesheet" type="text/css" href="/static/Login_v16/vendor/css-hamburgers/hamburgers.min.css">
+      <!--===============================================================================================-->
+        <link rel="stylesheet" type="text/css" href="/static/Login_v16/vendor/animsition/css/animsition.min.css">
+      <!--===============================================================================================-->
+        <link rel="stylesheet" type="text/css" href="/static/Login_v16/vendor/select2/select2.min.css">
+      <!--===============================================================================================-->	
+        <link rel="stylesheet" type="text/css" href="/static/Login_v16/vendor/daterangepicker/daterangepicker.css">
+      <!--===============================================================================================-->
+        <link rel="stylesheet" type="text/css" href="/static/Login_v16/css/util.css">
+        <link rel="stylesheet" type="text/css" href="/static/Login_v16/css/main.css">
+      <!--===============================================================================================-->
+      </head>
 
   <body>
 
-    <div class="container">
-      <form class="form-signin" role="form" method="post" action=".">
-        <h2 class="form-signin-heading">Registracija</h2>
-        %if napaka:
-        <div class="alert alert-warning">{{napaka}}</div>
-        %end
 
-        <input type="ime" class="form-control" placeholder="Ime"
-              %if ime:
-              value="{{ime}}"
-              %end
-              name="ime"
-              required>
-
-        <input type="priimek" class="form-control" placeholder="Priimek"
-              %if priimek:
-              value="{{priimek}}"
-              %end
-              name="priimek"
-              required autofocus>
-
-        <input type="rojstvo" class="form-control" placeholder="Datum rojstva"
-              %if rojstvo:
-              value="{{rojstvo}}"
-              %end
-              name="rojstvo"
-              required>
-
-        <input type="kraj" class="form-control" placeholder="Kraj"
-                %if kraj:
-                value="{{kraj}}"
-                %end
-                name="kraj"
-                required>
-
-        <input type="racun" class="form-control" placeholder="Racun"
-               %if racun:
-               value="{{racun}}"
-               %end
-               name="racun"
-               required>
-
-        <select type="je_cenilec" class="form-control" name="je_cenilec">
-          <option value=TRUE>Sem cenilec</option>
-          <option value=FALSE>Nisem cenilec</option>
-        </select>
+      <div class="limiter">
         
-              
-        <input type="cena" class="form-control" placeholder="Koliko računaš?"
-               %if cena:
-               value="{{cena}}"
-               %end
-               name="cena"
-               >
+          <div class="container-login100" style="background-image: url('/static/Login_v16/images/ozadje3.jpg');">
+            <div class="wrap-login100 p-t-30 p-b-50">
+              <span class="login100-form-title p-b-41">
+                Registracija
+              </span>
+              <form class="login100-form validate-form p-b-33 p-t-5" role="form" method="post" action=".">
+                  %if napaka:
+                  <div class="alert alert-warning">{{napaka}}</div>
+                  %end
+      
+                  <div class="wrap-input100 validate-input" data-validate = "Ime">
+                      <input type="text" class="input100" placeholder="Ime"
+                      %if ime:
+                      value="{{ime}}"
+                      %end
+                      name="ime"
+                      required>
+                      <span class="focus-input100" data-placeholder="&#xe82a;"></span>
+                    </div>
 
-        <input type="ocena" class="form-control" placeholder="Oceni se"
-        %if ocena:
-        value="{{ocena}}"
-        %end
-        name="ocena"
-        >
+                  <div class="wrap-input100 validate-input" data-validate = "Priimek">
+                      <input type="text" class="input100" placeholder="Priimek"
+                      %if priimek:
+                      value="{{priimek}}"
+                      %end
+                      name="priimek"
+                      required autofocus>
+                      <span class="focus-input100" data-placeholder="&#xe82a;"></span>
+                    </div>
 
-        <input type="username" class="form-control" placeholder="Uporabnisko ime"
-               %if username:
-               value="{{username}}"
-               %end
-               name="username"
-               required autofocus>
-        <input type="password" class="form-control" placeholder="Geslo" name="password1" required><br>
-        <input type="password" class="form-control" placeholder="Geslo" name="password2" required><br>
-        <button class="btn btn-lg btn-primary btn-block" type="submit">Registriraj se</button>
-      </form>
-    </div> <!-- /container -->
+                  <div class="wrap-input100 validate-input" data-validate = "Datum rojstva">
+                      <input type="date" class="input100" placeholder="Datum rojstva"
+                      %if rojstvo:
+                      value="{{rojstvo}}"
+                      %end
+                      name="rojstvo"
+                      required>
+                      <span class="focus-input100" data-placeholder="&#xe82a;"></span>
+                    </div>
 
-    <!-- Bootstrap core JavaScript
-    ================================================= -->
-    <!-- Placed at the end of the document so the pages load faster -->
+                  <div class="wrap-input100 validate-input" data-validate = "Kraj">
+                      <input type="text" class="input100" placeholder="Kraj"
+                      %if kraj:
+                      value="{{kraj}}"
+                      %end
+                      name="kraj"
+                      required>
+                      <span class="focus-input100" data-placeholder="&#xe82a;"></span>
+                    </div>
+
+                  <div class="wrap-input100 validate-input" data-validate = "Racun">
+                      <input type="text" class="input100" placeholder="Racun"
+                      %if racun:
+                      value="{{racun}}"
+                      %end
+                      name="racun"
+                      required>
+                      <span class="focus-input100" data-placeholder="&#xe82a;"></span>
+                    </div>
+
+                    <div class="wrap-input100">
+                        <select type="select" class="input100" name="je_cenilec">
+                            <option value=TRUE>Sem cenilec</option>
+                            <option value=FALSE>Nisem cenilec</option>
+                          </select>           
+
+                    
+                          <input type="text" class="input100" placeholder="Koliko računaš?"
+                          %if cena:
+                          value="{{cena}}"
+                          %end
+                          name="cena"
+                          >
+                      
+                          <input type="text" class="input100" placeholder="Oceni se"
+                          %if ocena:
+                          value="{{ocena}}"
+                          %end
+                          name="ocena"
+                          >
+                          <span class="focus-input100" data-placeholder="&#xe82a;"></span>
+                      </div>
+
+                    <div class="wrap-input100 validate-input" data-validate = "Uporabniško ime">
+                        <input type="text" class="input100" placeholder="Uporabnisko ime"
+                        %if username:
+                        value="{{username}}"
+                        %end
+                        name="username"
+                        required autofocus>
+                        <span class="focus-input100" data-placeholder="&#xe82a;"></span>
+                      </div>
+
+                    <div class="wrap-input100 validate-input" data-validate="Vnesi geslo">
+                        <input type="password" class="input100" placeholder="Geslo" name="password" required>
+                        <span class="focus-input100" data-placeholder="&#xe80f;"></span>
+                      </div>
+  
+                    <div class="wrap-input100 validate-input" data-validate="Vnesi geslo">
+                        <input type="password" class="input100" placeholder="Ponovi geslo" name="password" required>
+                        <span class="focus-input100" data-placeholder="&#xe80f;"></span>
+                      </div>
+                    
+                      <div class="container-login100-form-btn m-t-32">
+                          <button class="login100-form-btn" type="submit">Registracija</button>
+                        </div>
+                    
+                
+              </form>
+            </div>
+          </div>
+        </div>
+        
+      
+        <div id="dropDownSelect1"></div>    
+
+
+    <!--===============================================================================================-->
+	<script src="/static/Login_v16/vendor/jquery/jquery-3.2.1.min.js"></script>
+  <!--===============================================================================================-->
+    <script src="/static/Login_v16/vendor/animsition/js/animsition.min.js"></script>
+  <!--===============================================================================================-->
+    <script src="/static/Login_v16/vendor/bootstrap/js/popper.js"></script>
+    <script src="/static/Login_v16/vendor/bootstrap/js/bootstrap.min.js"></script>
+  <!--===============================================================================================-->
+    <script src="/static/Login_v16/vendor/select2/select2.min.js"></script>
+  <!--===============================================================================================-->
+    <script src="/static/Login_v16/vendor/daterangepicker/moment.min.js"></script>
+    <script src="/static/Login_v16/vendor/daterangepicker/daterangepicker.js"></script>
+  <!--===============================================================================================-->
+    <script src="/static/Login_v16/vendor/countdowntime/countdowntime.js"></script>
+  <!--===============================================================================================-->
+    <script src="/static/Login_v16/js/main.js"></script>
   </body>
 
 </html>
