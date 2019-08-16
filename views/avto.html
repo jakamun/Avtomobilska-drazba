@@ -90,9 +90,31 @@
     %end
 </div>
 
-%if len(ocene)>0:
+%if len(podane_ocene)>0:
     <div>
-        <h1>Ocene avtomobila</h1>
+        <h1>Podane ocene avtomobila</h1>
+    </div>
+    <div>
+        <table cellpading="0" cellspacing="0" border="1">
+            <tr>
+                <th>ID</th>
+                <th>Za kupca</th>
+                <th>Ocena</th>
+            </tr>
+            %for (id_ocene, kupec, ocena) in podane_ocene:
+            <tr>
+                <td>{{id_ocene}}</td>
+                <td>{{kupec}}</td>
+                <td>{{ocena}}</td>
+            </tr>
+            %end
+        </table>
+    </div>
+%end
+
+%if len(pridobljene_ocene) > 0:
+<div>
+        <h1>Pridobljene ocene avtomobila</h1>
     </div>
     <div>
         <table cellpading="0" cellspacing="0" border="1">
@@ -101,7 +123,7 @@
                 <th>Cenilec</th>
                 <th>Ocena</th>
             </tr>
-            %for (id_ocene, cenilec, ocena) in ocene:
+            %for (id_ocene, cenilec, ocena) in pridobljene_ocene:
             <tr>
                 <td>{{id_ocene}}</td>
                 <td>{{cenilec}}</td>
