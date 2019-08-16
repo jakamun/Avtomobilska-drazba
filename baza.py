@@ -371,6 +371,16 @@ def post_komentar():
 @get("/user/:x/")
 def uporabnik(x):
     username = get_user()
+    cur.execute("SELECT je_cenilec FROM oseba WHERE username=%s", [username])
+    cenilec = cur.fetchone()[0]
+    cur.execute("""SELECT id_avto, znamka, model, username, vrednost FROM oseba
+                JOIN (SELECT id_avto, znamka, model, kupec, vrednost FROM ocena 
+                JOIN avtomobil ON avtomobil.id_avto=ocena.avto
+                JOIN model ON avtomobil.id_model = model.id_model
+                JOIN znamka ON znamka.id_znamka = model.id_znamka
+                JOIN oseba ON oseba.id_oseba=ocena.cenilec
+                WHERE username=%s) AS cenitve ON oseba.id_oseba=cenitve.kupec""", [username])
+    cenitve = cur.fetchall()
     cur.execute("""SELECT id_avto, znamka, model, gorivo, prevozeni_kilometri, velikost_motorja, kw, cena, max_moja_ponudba, MAX(ponujena_cena) AS max_ponudba FROM avtomobil AS avto
                 JOIN model ON avto.id_model = model.id_model
                 JOIN znamka ON znamka.id_znamka = model.id_znamka
@@ -395,7 +405,56 @@ def uporabnik(x):
             else:
                 vrstica.append('PORAŽENEC')
                 koncane.append(tuple(vrstica))
-    return template('user.html', koncane=koncane, aktivne=aktivne, username=username[0])
+    return template('user.html', koncane=koncane, aktivne=aktivne, cenitve=cenitve, cenilec=cenilec, cena=None, ocena=None, username=username[0])
+
+@post("/user/:x/")
+def post_user(x):
+    username = get_user()
+    cur.execute("SELECT je_cenilec FROM oseba WHERE username=%s", [username])
+    cenilec = cur.fetchone()[0]
+    cur.execute("""SELECT id_avto, znamka, model, username, vrednost FROM oseba
+                JOIN (SELECT id_avto, znamka, model, kupec, vrednost FROM ocena 
+                JOIN avtomobil ON avtomobil.id_avto=ocena.avto
+                JOIN model ON avtomobil.id_model = model.id_model
+                JOIN znamka ON znamka.id_znamka = model.id_znamka
+                JOIN oseba ON oseba.id_oseba=ocena.cenilec
+                WHERE username=%s) AS cenitve ON oseba.id_oseba=cenitve.kupec""", [username])
+    cenitve = cur.fetchall()
+    cur.execute("""SELECT id_avto, znamka, model, gorivo, prevozeni_kilometri, velikost_motorja, kw, cena, max_moja_ponudba, MAX(ponujena_cena) AS max_ponudba FROM avtomobil AS avto
+                JOIN model ON avto.id_model = model.id_model
+                JOIN znamka ON znamka.id_znamka = model.id_znamka
+                JOIN (SELECT avto, ponudnik, max(ponujena_cena) AS max_moja_ponudba FROM ponudba
+                JOIN oseba ON oseba.id_oseba=ponudba.ponudnik
+                WHERE username=%s
+                GROUP BY avto, ponudnik) AS pon ON avto.id_avto = pon.avto
+                JOIN ponudba ON ponudba.avto = avto.id_avto
+                GROUP BY id_avto, znamka, model, max_moja_ponudba""", [username])
+    avto = cur.fetchall()
+    koncane = []
+    aktivne = []
+    for i in avto:
+        vrstica = list(i)
+        stanje = stanje_drazbe(vrstica[0])
+        if stanje == 'Dražba poteka':
+            aktivne.append(tuple(vrstica))
+        else:
+            if vrstica[-1] == vrstica[-2]:
+                vrstica.append('ZMAGOVALEC')
+                koncane.append(tuple(vrstica))
+            else:
+                vrstica.append('PORAŽENEC')
+                koncane.append(tuple(vrstica))
+    if cenilec == True:
+        cena = request.forms.cena
+        ocena = request.forms.ocena
+        cur.execute("UPDATE oseba SET je_cenilec=True, cena=%s, ocena=%s WHERE username=%s", [cena, ocena, username[0]])
+        return template('user.html', koncane=koncane, aktivne=aktivne, cenitve=cenitve, cenilec=not cenilec, cena=None, ocena=None, username=username[0])
+    else:
+        je_cenilec = request.forms.je_cenilec
+        if je_cenilec:
+            cur.execute("UPDATE oseba SET je_cenilec=False, cena=NULL, ocena=NULL WHERE username=%s", [username[0]])
+            return template('user.html', koncane=koncane, aktivne=aktivne, cenitve=cenitve, cenilec=not cenilec, cena=None, ocena=None, username=username[0])
+
 
 @get("/cenilci/")
 def get_cenilci():

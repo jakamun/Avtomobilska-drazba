@@ -5,6 +5,30 @@
 </h1>
 </div>
 
+%if len(cenitve) > 0:
+   <div>
+         <h1>Podane ocene</h1>
+   </div>
+   <table>
+      <tr>
+         <th>ID</th>
+         <th>Znamka</th>
+         <th>Model</th>
+         <th>Kupec</th>
+         <th>Ocena</th>
+      </tr>
+      %for (id_avto, znamka, model, username, vrednost) in cenitve:
+         <tr>
+            <td><a href="/avto/{{id_avto}}/">{{id_avto}}</a></td>
+            <td>{{znamka}}</td>
+            <td>{{model}}</td>
+            <td>{{username}}</td>
+            <td>{{vrednost}}</td>
+         </tr>
+      %end
+   </table>
+%end
+
 %if len(aktivne) > 0:
    <div >
    <h1>Aktivne dražbe</h1>
@@ -74,3 +98,38 @@
    </table>
    </div>
    %end
+
+%if cenilec == True:
+   <div>
+      <h1>Želite ostati cenilec</h1>
+      <div class="wrap-input100">
+         <select type="select" class="input100" name="je_cenilec">
+            <option value=TRUE>Nočem biti več cenilec</option>
+            <option value=FALSE>Želim ostati cenilec</option>
+         </select> 
+         <button class="btn btn-lg btn-primary btn-block" type="submit">Nočem biti cenilec</button>
+      </div>
+   </div>
+%else:
+   <div>
+      <h1>Želiš postati cenilec</h1>
+      <div class="wrap-input100">
+         <input type="text" class="input100" placeholder="Koliko računaš?"
+         %if cena:
+         value="{{cena}}"
+         %end
+         name="cena"
+         required autofocus>
+      
+         <input type="text" class="input100" placeholder="Oceni se"
+         %if ocena:
+         value="{{ocena}}"
+         %end
+         name="ocena"
+         required autofocus>
+      </div>
+      <div>
+         <button class="btn btn-lg btn-primary btn-block" type="submit">Postani cenilec</button>
+      </div>
+   </div>
+%end
