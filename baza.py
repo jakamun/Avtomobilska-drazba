@@ -444,7 +444,7 @@ def post_user(x):
             else:
                 vrstica.append('PORAŽENEC')
                 koncane.append(tuple(vrstica))
-    if cenilec == True:
+    if cenilec == False:
         cena = request.forms.cena
         ocena = request.forms.ocena
         cur.execute("UPDATE oseba SET je_cenilec=True, cena=%s, ocena=%s WHERE username=%s", [cena, ocena, username[0]])
@@ -459,8 +459,27 @@ def post_user(x):
 @get("/cenilci/")
 def get_cenilci():
     username = get_user()
-    cur.execute("""SELECT id_oseba, ime, priimek, racun, kraj, ocena, cena FROM oseba where je_cenilec=TRUE""")
-    return template('cenilci.html', oseba=cur, username=username)
+    cur.execute("""SELECT id_oseba, ime, priimek, username, racun, kraj, ocena, cena FROM oseba WHERE je_cenilec=TRUE""")
+    return template('cenilci.html', oseba=cur, username=username[0])
+
+@post('/cenilci/')
+def cenilci_filter():
+    search = request.forms.search.lower()
+    username = get_user()
+    if search == '':
+        return redirect('/cenilci/')
+    else:
+        cur.execute("SELECT id_oseba, ime, priimek, username, racun, kraj, ocena, cena"
+                    " FROM (SELECT * FROM oseba WHERE CAST(id_oseba AS varchar(10)) LIKE %s"
+                    "OR LOWER(ime) LIKE %s"
+                    "OR LOWER(priimek) LIKE %s"
+                    "OR LOWER(username) LIKE %s"
+                    "OR CAST(racun AS varchar(10)) LIKE  %s"
+                    "OR LOWER(kraj) LIKE %s"
+                    "OR CAST(ocena AS varchar(10)) LIKE %s"
+                    "OR CAST(cena AS varchar(10)) LIKE %s) AS cenilci WHERE je_cenilec=True",
+                    8 *['%' + search + '%'])
+        return template('cenilci.html', oseba=cur, username=username[0])
 
 @get("/cenilec/:x/")
 def get_cenilec(x):

@@ -102,34 +102,35 @@
 %if cenilec == True:
    <div>
       <h1>Želite ostati cenilec</h1>
-      <div class="wrap-input100">
-         <select type="select" class="input100" name="je_cenilec">
-            <option value=TRUE>Nočem biti več cenilec</option>
-            <option value=FALSE>Želim ostati cenilec</option>
-         </select> 
-         <button class="btn btn-lg btn-primary btn-block" type="submit">Nočem biti cenilec</button>
+      <div class="contaniner">
+         <form class="form-signin" role="form" method="post" action=".">
+            <select type="select" class="form-control" name="je_cenilec">
+               <option value=TRUE>Nočem biti več cenilec</option>
+               <option value=FALSE>Želim ostati cenilec</option>
+            </select> 
+            <button class="btn btn-lg btn-primary btn-block" type="submit">Potrdi</button>
+         </form>
       </div>
    </div>
 %else:
    <div>
       <h1>Želiš postati cenilec</h1>
-      <div class="wrap-input100">
-         <input type="text" class="input100" placeholder="Koliko računaš?"
-         %if cena:
-         value="{{cena}}"
-         %end
-         name="cena"
-         required autofocus>
+      <div class="contaniner">
+         <form class="form-signin" role="form" method="post" action=".">
+            <input type="text" class="form-control" placeholder="Koliko računaš?"
+            %if cena:
+            value="{{cena}}"
+            %end
+            name="cena"
+            required autofocus>
       
-         <input type="text" class="input100" placeholder="Oceni se"
-         %if ocena:
-         value="{{ocena}}"
-         %end
-         name="ocena"
-         required autofocus>
-      </div>
-      <div>
-         <button class="btn btn-lg btn-primary btn-block" type="submit">Postani cenilec</button>
-      </div>
+            <input type="text" class="form-control" placeholder="Oceni se"
+            %if ocena:
+            value="{{ocena}}"
+            %end
+            name="ocena"
+            required autofocus>
+            <button class="btn btn-lg btn-primary btn-block" type="submit">Postani cenilec</button>
+         </form>
    </div>
 %end
