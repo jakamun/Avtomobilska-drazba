@@ -90,6 +90,32 @@
     %end
 </div>
 
+%if len(ocene)>0:
+    <div>
+        <h1>Ocene avtomobila</h1>
+    </div>
+    <div>
+        <table cellpading="0" cellspacing="0" border="1">
+            <tr>
+                <th>ID</th>
+                <th>Cenilec</th>
+                <th>Ocena</th>
+            </tr>
+            %for (id_ocene, cenilec, ocena) in ocene:
+            <tr>
+                <td>{{id_ocene}}</td>
+                <td>{{cenilec}}</td>
+                <td>{{ocena}}</td>
+            </tr>
+            %end
+        </table>
+    </div>
+%end
+
+<div>
+    <h1>Podaj ponudbo</h1>
+</div>
+
 <center>
     <div class="container">
         <form class="form-signin" role="form" method="post" action=".">
