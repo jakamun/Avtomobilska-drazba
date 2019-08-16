@@ -89,6 +89,19 @@ def stanje_drazbe(avto):
     else:
         return('Dražba poteka')
 
+def povprecje_cenilca(cenilec):
+    cur.execute("SELECT ime, priimek, username, racun, kraj, ocena, cena, ROUND(AVG(dana_ocena)) AS povprecje"
+                " FROM ocena_cenilca JOIN oseba ON ocena_cenilca.id_cenilec=oseba.id_oseba WHERE id_cenilec=%s"
+                " GROUP BY ime, priimek, username, racun, kraj, ocena, cena", [cenilec])
+    podatki = cur.fetchone()
+    if podatki == None:
+        cur.execute("SELECT ime, priimek, username, racun, kraj, ocena, cena FROM oseba WHERE id_oseba=%s", [cenilec])
+        podatki = cur.fetchone()
+        podatki.append("Cenilec še ni bil ocenjen.")
+        return podatki
+    else:
+        return podatki
+
 @get("/")
 def main():
     """Glavna stran."""
@@ -484,16 +497,38 @@ def cenilci_filter():
 @get("/cenilec/:x/")
 def get_cenilec(x):
     username = get_user()
-    cur.execute("SELECT ime, priimek, racun, kraj, ocena, cena, username FROM oseba WHERE id_oseba=%s", [x])
-    sez = cur.fetchone()
-    return template('cenilec.html',ime=sez[0], priimek=sez[1], racun=sez[2], kraj=sez[3], ocena=sez[4], cena=sez[5], uporabnik=sez[6], username=username)
+    sez = povprecje_cenilca(x)
+    cur.execute("""SELECT id_avto, znamka, model, vrednost FROM oseba
+                JOIN (SELECT id_avto, znamka, model, kupec, vrednost FROM ocena 
+                JOIN avtomobil ON avtomobil.id_avto=ocena.avto
+                JOIN model ON avtomobil.id_model = model.id_model
+                JOIN znamka ON znamka.id_znamka = model.id_znamka
+                JOIN oseba ON oseba.id_oseba=ocena.cenilec
+                WHERE id_oseba=%s) AS cenitve ON oseba.id_oseba=cenitve.kupec WHERE username=%s""", [x, username])
+    cenitve = cur.fetchall()
+    return template('cenilec.html',ime=sez[0], priimek=sez[1], uporabnik=sez[2], racun=sez[3], kraj=sez[4], lastna_ocena=sez[5],
+                    cena=sez[6], povprecna_ocena=sez[7], ocena=None, ocene=cenitve, username=username[0], napaka=None)
 
 @post("/cenilec/:x/")
 def post_cenilec(x):
     username = get_user()
     ocena = request.forms.ocena
-    cur.execute("INSERT INTO ocena_cenilca (id_cenilec, dana_ocena) VALUES (%s, %s)", [x, ocena])
-    return redirect("/cenilci/")
+    sez = povprecje_cenilca(x)
+    cur.execute("""SELECT id_avto, znamka, model, vrednost FROM oseba
+                JOIN (SELECT id_avto, znamka, model, kupec, vrednost FROM ocena 
+                JOIN avtomobil ON avtomobil.id_avto=ocena.avto
+                JOIN model ON avtomobil.id_model = model.id_model
+                JOIN znamka ON znamka.id_znamka = model.id_znamka
+                JOIN oseba ON oseba.id_oseba=ocena.cenilec
+                WHERE id_oseba=%s) AS cenitve ON oseba.id_oseba=cenitve.kupec WHERE username=%s""", [x, username])
+    cenitve = cur.fetchall()
+    if int(ocena) in range(1,11):
+        cur.execute("INSERT INTO ocena_cenilca (id_cenilec, dana_ocena) VALUES (%s, %s)", [x, ocena])
+        return template('cenilec.html',ime=sez[0], priimek=sez[1], uporabnik=sez[2], racun=sez[3], kraj=sez[4], lastna_ocena=sez[5],
+                        cena=sez[6], povprecna_ocena=sez[7], ocena=None, ocene=cenitve, username=username[0], napaka=None)
+    else:
+        return template('cenilec.html',ime=sez[0], priimek=sez[1], uporabnik=sez[2], racun=sez[3], kraj=sez[4], lastna_ocena=sez[5],
+                        cena=sez[6], povprecna_ocena=sez[7], ocena=None, ocene=cenitve, username=username[0], napaka='Oceno ste podali narobe!')
 
 ######################################################################
 # Glavni program

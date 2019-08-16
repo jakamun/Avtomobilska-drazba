@@ -9,30 +9,76 @@
     }
 </style>
 
+<div>
+    <h1>Podatki o cenilcu</h1>
+</div>
+
+<center>
+<div>
 <table cellpading="0" cellspacing="0" border="1">
         <tr>
             <th>Ime</th>
             <th>Priimek</th>
+            <th>Uporabniško ime</th>
             <th>TRR</th>
             <th>Kraj</th>
-            <th>Ocena cenilca</th>
+            <th>Lastna ocena cenilca</th>
+            <th>Povprečna ocena cenilca</th>
             <th>Cena cenilca</th>
-            <th>Uporabniško ime</th>
         </tr>
         <tr>
             <td>{{ime}}</td>
             <td>{{priimek}}</td>
+            <td>{{uporabnik}}</td>
             <td>{{racun}}</td>
             <td>{{kraj}}</td>
-            <td>{{ocena}}</td>
+            <td>{{lastna_ocena}}</td>
+            <td>{{povprecna_ocena}}</td>
             <td>{{cena}}</td>
-            <td>{{uporabnik}}</td>
         </tr>
     </table>
+</div>
+</center>
+
+%if len(ocene) > 0:
+    <div>
+        <h1>Opravljene ocene</h1>
+    </div>
+    <div>
+        <table cellpading="0" cellspacing="0" border="1">
+            <tr>
+                <th>ID</th>
+                <th>Znamka</th>
+                <th>Model</th>
+                <th>Ocena</th>
+            </tr>
+            %for (id_avto, znamka, model, vrednost) in ocene:
+            <tr>
+                <td><a href="/avto/{{id_avto}}/">{{id_avto}}</a></td>
+                <td>{{znamka}}</td>
+                <td>{{model}}</td>
+                <td>{{vrednost}}</td>
+            </tr>
+            %end
+        </table>
+    </div>
+%end
+
+<div>
+    <h1>Oceni cenilca</h1>
+</div>
+
+<div class="container">
+    %if napaka:
+        <div class="alert alert-warning">
+            <h3><center>{{napaka}}</center></h3>
+        </div>
+    %end
+</div>
 
 <div class="container">
     <form class="form-signin" role="form" method="post" action=".">
-            <input type="ocena" class="form-control" placeholder="Ocena cenilca"
+            <input type="ocena" class="form-control" placeholder="Ocena cenilca (1-10)"
             %if username:
             value="{{ocena}}"
             %end
