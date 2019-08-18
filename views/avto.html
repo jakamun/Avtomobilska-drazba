@@ -134,6 +134,29 @@
     </div>
 %end
 
+%if je_cenilec == True:
+    <div>
+        <h1>Oceni avtomobil</h1>
+    </div>
+    <div class="p-3">
+        <form class="user" role="form" method="post" action="." >
+            <span class="label-input100">Prejemnik:</span><br>
+            <select name="user">
+            %for user in users:
+                <option value="{{user}}">{{user[0]}}</option>
+            %end
+            </select>
+            <input type="cenitev" class="form-control" placeholder="Cenitev (1-10)"
+            %if username:
+            value="{{cenitev}}"
+            %end
+            name="cenitev"
+            required autofocus>
+            <button class="btn btn-lg btn-primary btn-block" type="submit">Oddaj oceno</button>
+        </form>
+    </div>
+%end
+
 <div>
     <h1>Podaj ponudbo</h1>
 </div>

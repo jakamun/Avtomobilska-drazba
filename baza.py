@@ -161,6 +161,10 @@ def avto_get(x):
     " JOIN znamka ON znamka.id_znamka = model.id_znamka WHERE id_avto=%s", [int(x)])
     avto = list(cur.fetchone())
     avto.append(stanje_drazbe(x))
+    cur.execute("""SELECT username FROM oseba WHERE username!=%s""", [username])
+    users = tuple(cur)
+    cur.execute("SELECT je_cenilec FROM oseba WHERE username=%s", [username])
+    je_cenilec = cur.fetchone()[0]
     cur.execute("""SELECT id_ocena, username, vrednost FROM oseba
                 JOIN (SELECT id_ocena, kupec, vrednost FROM ocena 
                 JOIN oseba ON oseba.id_oseba=ocena.cenilec WHERE username=%s) 
@@ -180,24 +184,31 @@ def avto_get(x):
     cur.execute("SELECT MAX(ponujena_cena) FROM ponudba WHERE avto=%s", [x])
     max_ponudba = cur.fetchone()
     if avto[-1] == 'Dražba je potekla':
-        return template('avto.html', x=x, ponudbe=ponudbe, avto=avto, username=username[0], cas=potekel_cas(zadnja_ponudba),
+        return template('avto.html', x=x, ponudbe=ponudbe, avto=avto, username=username[0], cas=potekel_cas(zadnja_ponudba), je_cenilec=je_cenilec, cenitev=None, users=users,
                             max_ponudba=max_ponudba[0], podane_ocene=podane_ocene, pridobljene_ocene=pridobljene_ocene, ponudba=None, napaka = 'Dražba je zaključena')
     elif avto[-1] == 'Še ni ponudbe':
-        return template('avto.html', x=x, ponudbe=ponudbe, avto=avto, podane_ocene=podane_ocene, pridobljene_ocene=pridobljene_ocene, username = username[0], ponudba=None, napaka = None)
+        return template('avto.html', x=x, ponudbe=ponudbe, avto=avto, podane_ocene=podane_ocene, je_cenilec=je_cenilec, users=users,
+                        pridobljene_ocene=pridobljene_ocene, username = username[0], ponudba=None, cenitev=None, napaka = None)
     else:
-        return template('avto.html', x=x, ponudbe=ponudbe, avto=avto, username = username[0], cas=potekel_cas(zadnja_ponudba),
-                        max_ponudba=max_ponudba[0], ponudba=None, podane_ocene=podane_ocene, pridobljene_ocene=pridobljene_ocene, napaka = None)
+        return template('avto.html', x=x, ponudbe=ponudbe, avto=avto, username = username[0], cas=potekel_cas(zadnja_ponudba), je_cenilec=je_cenilec, users=users,
+                        max_ponudba=max_ponudba[0], ponudba=None, podane_ocene=podane_ocene, pridobljene_ocene=pridobljene_ocene, cenitev=None, napaka = None)
 
 
 @post('/avto/:x/')
 def avto_post(x):
     username = get_user()
     ponudba = request.forms.ponudba
+    cenitev = request.forms.cenitev
+    kupec = request.forms.user
     cur.execute("SELECT znamka, model, gorivo, prevozeni_kilometri, velikost_motorja, kw, cena  FROM avtomobil AS avto" +
         " JOIN model ON avto.id_model = model.id_model" +
         " JOIN znamka ON znamka.id_znamka = model.id_znamka WHERE id_avto=%s", [x])
     avto = list(cur.fetchone())
     avto.append(stanje_drazbe(x))
+    cur.execute("""SELECT username FROM oseba WHERE username!=%s""", [username])
+    users = tuple(cur)
+    cur.execute("SELECT je_cenilec FROM oseba WHERE username=%s", [username])
+    je_cenilec = cur.fetchone()[0]
     cur.execute("""SELECT id_ocena, username, vrednost FROM oseba
                 JOIN (SELECT id_ocena, kupec, vrednost FROM ocena 
                 JOIN oseba ON oseba.id_oseba=ocena.cenilec WHERE username=%s) 
@@ -217,14 +228,22 @@ def avto_post(x):
     cur.execute("SELECT MAX(ponujena_cena) FROM ponudba WHERE avto=%s", [x])
     max_ponudba = cur.fetchone()[0]
     if avto[-1] == 'Dražba je potekla':
-        return template('avto.html', x=x, ponudbe=ponudbe, avto=avto, username=username[0], cas=potekel_cas(zadnja_ponudba),
+        return template('avto.html', x=x, ponudbe=ponudbe, avto=avto, username=username[0], cas=potekel_cas(zadnja_ponudba), je_cenilec=je_cenilec, cenitev=None, users=users,
                         max_ponudba=max_ponudba, ponudba=None, podane_ocene=podane_ocene, pridobljene_ocene=pridobljene_ocene, napaka = 'Dražba je zaključena')
+    elif cenitev != "":
+        cur.execute("SELECT id_oseba FROM oseba WHERE username=%s", [kupec])
+        id_kupec = cur.fetchone()[0]
+        cur.execute("SELECT id_oseba FROM oseba WHERE username=%s", [username])
+        id_cenilec = cur.fetchone()[0]
+        cur.execute("INSERT INTO ocena (avto, kupec, cenilec, vrednost) VALUES (%s, %s, %s, %s)", [x, id_kupec, id_cenilec, cenitev])
+        return template('avto.html', x=x, ponudbe=ponudbe, avto=avto, ponudba=None, cas=None, podane_ocene=podane_ocene, pridobljene_ocene=pridobljene_ocene, users=users,
+                        je_cenilec=je_cenilec, max_ponudba=max_ponudba, username=username[0], cenitev=None, napaka=None)
     elif (len(ponudbe) == 0) and (int(avto[-2]) > int(ponudba)):
-        return template('avto.html', x=x, ponudbe=ponudbe, avto=avto, ponudba=None, cas=None, podane_ocene=podane_ocene, pridobljene_ocene=pridobljene_ocene,
-                        max_ponudba=max_ponudba, username=username[0], napaka = 'Ponudba mora biti višja od izklicne cene')
+        return template('avto.html', x=x, ponudbe=ponudbe, avto=avto, ponudba=None, cas=None, podane_ocene=podane_ocene, pridobljene_ocene=pridobljene_ocene, users=users,
+                        je_cenilec=je_cenilec, max_ponudba=max_ponudba, username=username[0], cenitev=None, napaka = 'Ponudba mora biti višja od izklicne cene')
     elif (len(ponudbe) > 0) and (int(ponudba) <= int(max_ponudba)):
         return template('avto.html', x=x, ponudbe=ponudbe, avto=avto, ponudba=None, cas=potekel_cas(zadnja_ponudba), podane_ocene=podane_ocene, pridobljene_ocene=pridobljene_ocene,
-                        max_ponudba=max_ponudba, username=username[0], napaka='Ponuditi morate več od trenutne najvišje ponudbe')
+                        users=users, je_cenilec=je_cenilec, max_ponudba=max_ponudba, username=username[0], cenitev=None, napaka='Ponuditi morate več od trenutne najvišje ponudbe')
     else:
         cur.execute("SELECT id_oseba FROM oseba WHERE username=%s", [username])
         ponudnik = cur.fetchone()[0]
@@ -239,8 +258,8 @@ def avto_post(x):
                 " JOIN oseba ON ponudba.ponudnik=oseba.id_oseba" +
                 " WHERE avto = %s", [x])
         ponudbe = cur.fetchall()
-        return template('avto.html', x=x, ponudbe=ponudbe, avto=avto, ponudba=None, podane_ocene=podane_ocene, pridobljene_ocene=pridobljene_ocene,
-                        cas=potekel_cas(max_ponudba[0]), max_ponudba=max_ponudba[1], username=username[0], napaka=None)
+        return template('avto.html', x=x, ponudbe=ponudbe, avto=avto, ponudba=None, podane_ocene=podane_ocene, pridobljene_ocene=pridobljene_ocene, users=users,
+                        je_cenilec=je_cenilec, cas=potekel_cas(max_ponudba[0]), max_ponudba=max_ponudba[1], cenitev=None, username=username[0], napaka=None)
 
 
 @get("/login/")
