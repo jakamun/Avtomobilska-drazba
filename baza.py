@@ -26,12 +26,6 @@ def static(filename):
     return static_file(filename, root='static')
 
 
-#@get('/')
-#def index():
-#    cur.execute("SELECT * FROM oseba ORDER BY priimek, ime")
-#    return template('osebe.html', osebe=cur)
-
-
 def password_md5(s):
     """Vrni MD5 hash danega UTF-8 niza. Gesla vedno spravimo v bazo
        kodirana s to funkcijo."""
@@ -394,13 +388,13 @@ def register_post():
 @get("/sporocilo/")
 def get_komentar():
     username = get_user()
-    cur.execute("SELECT id_oseba FROM oseba WHERE username=%s", [username])
-    id_oseba = cur.fetchone()[0]
-    cur.execute(
-    """SELECT cas, komentator, prejemnik, sporocilo
-       FROM komentar
-       WHERE (prejemnik = %s OR komentator = %s)
-       ORDER BY cas desc""", [id_oseba, id_oseba])
+    cur.execute("""SELECT cas, username AS komentator, prejemnik, sporocilo FROM oseba
+                JOIN (SELECT cas, komentator, username AS prejemnik, sporocilo FROM oseba
+                JOIN (SELECT cas, komentator, prejemnik, sporocilo
+                FROM komentar WHERE (prejemnik = (SELECT id_oseba FROM oseba WHERE username=%s)
+                OR komentator = (SELECT id_oseba FROM oseba WHERE username=%s))
+                ORDER BY cas desc) AS komentarji ON komentarji.prejemnik=oseba.id_oseba) AS sporocila
+                ON sporocila.komentator=oseba.id_oseba""", [username, username])
     sporocila = tuple(cur)
     pogovori = []
     for (cas, prejemnik, posiljatelj, sporocilo) in sporocila:
@@ -424,9 +418,12 @@ def post_komentar():
     cur.execute("SELECT id_oseba FROM oseba WHERE username=%s", [user])
     id_user = cur.fetchone()[0]
     spor = request.forms.spor
-    cur.execute("INSERT INTO komentar (komentator, prejemnik, sporocilo) VALUES (%s, %s, %s)",
-              [id_oseba, id_user, spor])
-    return redirect("/sporocilo/")
+    if spor == "":
+        return redirect("/sporocilo/")
+    else:
+        cur.execute("INSERT INTO komentar (komentator, prejemnik, sporocilo) VALUES (%s, %s, %s)",
+                    [id_oseba, id_user, spor])
+        return redirect("/sporocilo/")
 
 @get("/user/:x/")
 def uporabnik(x):
