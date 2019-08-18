@@ -63,12 +63,13 @@ def get_user(auto_login = True):
     else:
         return None
 
-max_cas = datetime.timedelta(hours=5)
+max_cas = datetime.timedelta(days=5)
 
 def potekel_cas(cas):
     '''izracuna koliko casa je minilo od zadnje podane ponudbe'''
-    trenutni_cas = datetime.datetime.now()
-    return trenutni_cas - cas
+    trenutni_cas = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    objekt_trenutni_cas = datetime.datetime.strptime(trenutni_cas, '%Y-%m-%d %H:%M:%S')
+    return objekt_trenutni_cas - cas
 
 def potekla_drazba(cas):
     '''izračuna če je dražba že potekla in vrne true ali false'''
@@ -231,13 +232,20 @@ def avto_post(x):
         return template('avto.html', x=x, ponudbe=ponudbe, avto=avto, username=username[0], cas=potekel_cas(zadnja_ponudba), je_cenilec=je_cenilec, cenitev=None, users=users,
                         max_ponudba=max_ponudba, ponudba=None, podane_ocene=podane_ocene, pridobljene_ocene=pridobljene_ocene, napaka = 'Dražba je zaključena')
     elif cenitev != "":
-        cur.execute("SELECT id_oseba FROM oseba WHERE username=%s", [kupec])
-        id_kupec = cur.fetchone()[0]
-        cur.execute("SELECT id_oseba FROM oseba WHERE username=%s", [username])
-        id_cenilec = cur.fetchone()[0]
-        cur.execute("INSERT INTO ocena (avto, kupec, cenilec, vrednost) VALUES (%s, %s, %s, %s)", [x, id_kupec, id_cenilec, cenitev])
-        return template('avto.html', x=x, ponudbe=ponudbe, avto=avto, ponudba=None, cas=None, podane_ocene=podane_ocene, pridobljene_ocene=pridobljene_ocene, users=users,
-                        je_cenilec=je_cenilec, max_ponudba=max_ponudba, username=username[0], cenitev=None, napaka=None)
+        if cenitev not in range(1,11):
+            return template('avto.html',x=x, ponudbe=ponudbe, avto=avto, username=username[0], cas=potekel_cas(zadnja_ponudba), je_cenilec=je_cenilec, cenitev=None, users=users,
+                            max_ponudba=max_ponudba, ponudba=None, podane_ocene=podane_ocene, pridobljene_ocene=pridobljene_ocene, napaka = 'Ocena mora biti med 1 in 10.')
+        else:
+            cur.execute("SELECT id_oseba FROM oseba WHERE username=%s OR username=%s", [kupec, username])
+            osebi = cur.fetchall()
+            cur.execute("INSERT INTO ocena (avto, kupec, cenilec, vrednost) VALUES (%s, %s, %s, %s)", [x, osebi[0][0], osebi[1][0], cenitev])
+            cur.execute("""SELECT id_ocena, username, vrednost FROM oseba
+                        JOIN (SELECT id_ocena, kupec, vrednost FROM ocena 
+                        JOIN oseba ON oseba.id_oseba=ocena.cenilec WHERE username=%s) 
+                        AS ocene ON oseba.id_oseba=ocene.kupec""", [username])
+            podane_ocene = cur.fetchall()
+            return template('avto.html', x=x, ponudbe=ponudbe, avto=avto, ponudba=None, cas=None, podane_ocene=podane_ocene, pridobljene_ocene=pridobljene_ocene, users=users,
+                            je_cenilec=je_cenilec, max_ponudba=max_ponudba, username=username[0], cenitev=None, napaka=None)
     elif (len(ponudbe) == 0) and (int(avto[-2]) > int(ponudba)):
         return template('avto.html', x=x, ponudbe=ponudbe, avto=avto, ponudba=None, cas=None, podane_ocene=podane_ocene, pridobljene_ocene=pridobljene_ocene, users=users,
                         je_cenilec=je_cenilec, max_ponudba=max_ponudba, username=username[0], cenitev=None, napaka = 'Ponudba mora biti višja od izklicne cene')
