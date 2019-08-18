@@ -140,10 +140,11 @@
     </div>
     <div class="p-3">
         <form class="user" role="form" method="post" action="." >
-            <span class="label-input100">Prejemnik:</span><br>
+            <span class="label-input100">Prejemnik:</span>
             <select name="user">
-            %for user in users:
-                <option value="{{user}}">{{user[0]}}</option>
+            %for useer in users:
+                % user = useer[0]
+                <option value="{{user}}">{{user}}</option>
             %end
             </select>
             <input type="cenitev" class="form-control" placeholder="Cenitev (1-10)"
