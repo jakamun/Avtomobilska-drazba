@@ -492,7 +492,7 @@ def post_user(x):
     for i in avto:
         vrstica = list(i)
         stanje = stanje_drazbe(vrstica[0])
-        if stanje == 'Dražba poteka':
+        if stanje == 'Dražba poteka.':
             aktivne.append(tuple(vrstica))
         else:
             if vrstica[-1] == vrstica[-2]:

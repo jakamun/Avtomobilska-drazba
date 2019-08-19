@@ -18,13 +18,13 @@
 </div>
 
 <div>
-    <h1>Trenutna najvišja ponudba</h1>
+    <h1 style="color: white">Trenutna najvišja ponudba</h1>
 </div>
 
 <div class="container">
     %if len(ponudbe) == 0:
     <div class="alert alert-warning">
-        <h3><center>{{"Ni še podane ponudbe"}}</center></h3>
+        <h3><center>{{"Ni še podane ponudbe."}}</center></h3>
     </div>
     %else:
     <table cellpading="0" cellspacing="0" border="1">
@@ -41,7 +41,7 @@
 </div>
 
 <div>
-    <h1>Podatki avtomobila</h1>
+    <h1 style="color: white">Podatki avtomobila</h1>
 </div>
 
 <div>
@@ -68,7 +68,7 @@
 </div>
 
 <div>
-    <h1>Ponudbe</h1>
+    <h1 style="color: white">Ponudbe</h1>
 </div>
 
 <div>
@@ -92,7 +92,7 @@
 
 %if len(podane_ocene)>0:
     <div>
-        <h1>Podane ocene avtomobila</h1>
+        <h1 style="color: white">Podane ocene avtomobila</h1>
     </div>
     <div>
         <table cellpading="0" cellspacing="0" border="1">
@@ -114,7 +114,7 @@
 
 %if len(pridobljene_ocene) > 0:
 <div>
-        <h1>Pridobljene ocene avtomobila</h1>
+        <h1 style="color: white">Pridobljene ocene avtomobila</h1>
     </div>
     <div>
         <table cellpading="0" cellspacing="0" border="1">
@@ -136,7 +136,7 @@
 
 %if je_cenilec == True:
     <div>
-        <h1>Oceni avtomobil</h1>
+        <h1 style="color: white">Oceni avtomobil</h1>
     </div>
     <div class="p-3">
         <form class="user" role="form" method="post" action="." >
@@ -159,7 +159,7 @@
 %end
 
 <div>
-    <h1>Podaj ponudbo</h1>
+    <h1 style="color: white">Podaj ponudbo</h1>
 </div>
 
 <center>
