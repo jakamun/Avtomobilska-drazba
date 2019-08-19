@@ -162,13 +162,13 @@ def avto_get(x):
     je_cenilec = cur.fetchone()[0]
     cur.execute("""SELECT id_ocena, username, vrednost FROM oseba
                 JOIN (SELECT id_ocena, kupec, vrednost FROM ocena 
-                JOIN oseba ON oseba.id_oseba=ocena.cenilec WHERE username=%s) 
-                AS ocene ON oseba.id_oseba=ocene.kupec""", [username])
+                JOIN oseba ON oseba.id_oseba=ocena.cenilec WHERE username=%s AND avto=%s) 
+                AS ocene ON oseba.id_oseba=ocene.kupec""", [username,x])
     podane_ocene = cur.fetchall()
     cur.execute("""SELECT id_ocena, username, vrednost FROM oseba
                 JOIN (SELECT id_ocena, cenilec, vrednost FROM ocena 
-                JOIN oseba ON oseba.id_oseba=ocena.kupec WHERE username=%s) 
-                AS ocene ON oseba.id_oseba=ocene.cenilec""", [username])
+                JOIN oseba ON oseba.id_oseba=ocena.kupec WHERE username=%s AND avto=%s) 
+                AS ocene ON oseba.id_oseba=ocene.cenilec""", [username,x])
     pridobljene_ocene = cur.fetchall()
     cur.execute("SELECT username, cas, ponujena_cena FROM ponudba" +
                 " JOIN oseba ON ponudba.ponudnik=oseba.id_oseba" +
