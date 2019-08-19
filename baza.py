@@ -206,13 +206,13 @@ def avto_post(x):
     je_cenilec = cur.fetchone()[0]
     cur.execute("""SELECT id_ocena, username, vrednost FROM oseba
                 JOIN (SELECT id_ocena, kupec, vrednost FROM ocena 
-                JOIN oseba ON oseba.id_oseba=ocena.cenilec WHERE username=%s) 
-                AS ocene ON oseba.id_oseba=ocene.kupec""", [username])
+                JOIN oseba ON oseba.id_oseba=ocena.cenilec WHERE username=%s AND avto=%s) 
+                AS ocene ON oseba.id_oseba=ocene.kupec""", [username,x])
     podane_ocene = cur.fetchall()
     cur.execute("""SELECT id_ocena, username, vrednost FROM oseba
                 JOIN (SELECT id_ocena, cenilec, vrednost FROM ocena 
-                JOIN oseba ON oseba.id_oseba=ocena.kupec WHERE username=%s) 
-                AS ocene ON oseba.id_oseba=ocene.cenilec""", [username])
+                JOIN oseba ON oseba.id_oseba=ocena.kupec WHERE username=%s AND avto=%s) 
+                AS ocene ON oseba.id_oseba=ocene.cenilec""", [username,x])
     pridobljene_ocene = cur.fetchall()
     cur.execute("SELECT username, cas, ponujena_cena FROM ponudba" +
                 " JOIN oseba ON ponudba.ponudnik=oseba.id_oseba" +
@@ -226,7 +226,7 @@ def avto_post(x):
         return template('avto.html', x=x, ponudbe=ponudbe, avto=avto, username=username[0], cas=potekel_cas(zadnja_ponudba), je_cenilec=je_cenilec, cenitev=None, users=users,
                         max_ponudba=max_ponudba, ponudba=None, podane_ocene=podane_ocene, pridobljene_ocene=pridobljene_ocene, napaka = 'Dražba je zaključena')
     elif cenitev != "":
-        if cenitev not in range(1,11):
+        if int(cenitev) not in range(1,11):
             return template('avto.html',x=x, ponudbe=ponudbe, avto=avto, username=username[0], cas=potekel_cas(zadnja_ponudba), je_cenilec=je_cenilec, cenitev=None, users=users,
                             max_ponudba=max_ponudba, ponudba=None, podane_ocene=podane_ocene, pridobljene_ocene=pridobljene_ocene, napaka = 'Ocena mora biti med 1 in 10.')
         else:
