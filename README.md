@@ -7,12 +7,16 @@ ki mu lahko pomagajo pri določitvi višine ponujene cene za posamezen avto. S c
 Cenilca lahko nato oceniš glede na svojo izkušnjo, kar posledično vpliva na njegov ugled, saj je ocena vidna vsem 
 uporabnikom aplikacije.
 
-Primer uporabniškega imena in gesla za vpis kot cenilec:
+Primer uporabniškega imena in gesla za vpis kot cenilec: 
+
 uporabniško ime = LokaMaka
+
 geslo = fasada
 
 Primer uporabniškega imena in gesla za vpis kot kupec:
+
 uporabniško ime = janr
+
 geslo = janr
 
 ![alt tag](https://github.com/jakamun/Avtomobilska-drazba/blob/master/Diagram1.png)
