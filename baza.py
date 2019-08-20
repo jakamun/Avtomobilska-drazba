@@ -235,8 +235,8 @@ def avto_post(x):
             cur.execute("INSERT INTO ocena (avto, kupec, cenilec, vrednost) VALUES (%s, %s, %s, %s)", [x, osebi[0][0], osebi[1][0], cenitev])
             cur.execute("""SELECT id_ocena, username, vrednost FROM oseba
                         JOIN (SELECT id_ocena, kupec, vrednost FROM ocena 
-                        JOIN oseba ON oseba.id_oseba=ocena.cenilec WHERE username=%s) 
-                        AS ocene ON oseba.id_oseba=ocene.kupec""", [username])
+                        JOIN oseba ON oseba.id_oseba=ocena.cenilec WHERE username=%s AND avto=%s) 
+                        AS ocene ON oseba.id_oseba=ocene.kupec""", [username, x])
             podane_ocene = cur.fetchall()
             return template('avto.html', x=x, ponudbe=ponudbe, avto=avto, ponudba=None, cas=None, podane_ocene=podane_ocene, pridobljene_ocene=pridobljene_ocene, users=users,
                             je_cenilec=je_cenilec, max_ponudba=max_ponudba, username=username[0], cenitev=None, napaka=None)
