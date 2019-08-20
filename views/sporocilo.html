@@ -2,7 +2,11 @@
 
 <div class="row px-5">
     <div class="col-lg-12">
-%for pogovor in pogovori:
+%for (kljuc, sporocila) in pogovori.items():
+<div>
+  <h1>{{kljuc}}</h1>
+</div>
+
 <div class="card shadow mb-4">
                 <!-- Card Header - Accordion -->
                 <a href="#collapseCardExample" class="d-block card-header py-3" data-toggle="collapse" role="button" aria-expanded="true" aria-controls="collapseCardExample">
@@ -23,14 +27,12 @@
                             <th>Sporočilo</th>
                           </tr>
                        %for (cas,  prejemnik, posiljatelj, s) in sporocila:
-                        %if posiljatelj == pogovor or prejemnik == pogovor:
                           <tr>
                             <td>{{ cas }}</td>
                             <td>{{ posiljatelj }}</td>
                             <td>{{ prejemnik }}</td>
                             <td>{{ s }}</td>
                           </tr>
-                        %end
                        %end
                         </table>
 

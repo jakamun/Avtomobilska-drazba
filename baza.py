@@ -118,16 +118,7 @@ def avtomobili_filter():
     search = request.forms.search.lower()
     username = get_user()
     if search == '':
-        cur.execute("SELECT id_avto, znamka, model, gorivo, prevozeni_kilometri, velikost_motorja, kw, cena  FROM avtomobil AS avto" +
-        " JOIN model ON avto.id_model = model.id_model" +
-        " JOIN znamka ON znamka.id_znamka = model.id_znamka")
-        avto = cur.fetchall()
-        sez = []
-        for i in avto:
-            vrstica = list(i)
-            vrstica.append(stanje_drazbe(vrstica[0]))
-            sez.append(tuple(vrstica))
-        return template('avtomobili.html', avto=sez, username=username[0])
+        return redirect('/')
     else:
         cur.execute("SELECT id_avto, znamka, model, gorivo, prevozeni_kilometri, velikost_motorja, kw, cena  FROM avtomobil AS avto" +
             " JOIN model ON avto.id_model = model.id_model" +
@@ -380,22 +371,30 @@ def get_komentar():
                 JOIN (SELECT cas, komentator, username AS prejemnik, sporocilo FROM oseba
                 JOIN (SELECT cas, komentator, prejemnik, sporocilo
                 FROM komentar WHERE (prejemnik = (SELECT id_oseba FROM oseba WHERE username=%s)
-                OR komentator = (SELECT id_oseba FROM oseba WHERE username=%s))
-                ORDER BY cas desc) AS komentarji ON komentarji.prejemnik=oseba.id_oseba) AS sporocila
-                ON sporocila.komentator=oseba.id_oseba""", [username, username])
+                OR komentator = (SELECT id_oseba FROM oseba WHERE username=%s)))
+                AS komentarji ON komentarji.prejemnik=oseba.id_oseba) AS sporocila
+                ON sporocila.komentator=oseba.id_oseba ORDER BY cas desc""", [username, username])
     sporocila = tuple(cur)
-    pogovori = []
+    pogovori = {}
     for (cas, prejemnik, posiljatelj, sporocilo) in sporocila:
-        if (prejemnik != username) and (prejemnik not in pogovori):
-            pogovori.append(prejemnik)
-        elif (posiljatelj != username) and (posiljatelj not in pogovori):
-            pogovori.append(posiljatelj)
+        if (prejemnik == username[0]) and (posiljatelj not in pogovori):
+            sporocilo = (cas, prejemnik, posiljatelj, sporocilo)
+            pogovori[posiljatelj] = [sporocilo]
+        elif (posiljatelj == username[0]) and (prejemnik not in pogovori):
+            sporocilo = (cas, prejemnik, posiljatelj, sporocilo)
+            pogovori[prejemnik] = [sporocilo]
+        elif prejemnik == username[0]:
+            sporocilo = (cas, prejemnik, posiljatelj, sporocilo)
+            pogovori[posiljatelj].append(sporocilo)
+        elif posiljatelj == username[0]:
+            sporocilo = (cas, prejemnik, posiljatelj, sporocilo)
+            pogovori[prejemnik].append(sporocilo)
     cur.execute("""SELECT username FROM oseba""")
     users = tuple(cur)
     useers = []
     for user in users:
         useers += user
-    return template("sporocilo.html", username=username[0], sporocila=sporocila, pogovori=pogovori, useers=useers)
+    return template("sporocilo.html", username=username[0], pogovori=pogovori, useers=useers)
 
 @post("/sporocilo/")
 def post_komentar():
