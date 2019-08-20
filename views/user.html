@@ -99,14 +99,22 @@
    </div>
    %end
 
+<div class="container">
+      %if napaka:
+         <div class="alert alert-warning">
+            <h3><center>{{napaka}}</center></h3>
+         </div>
+      %end
+   </div>
+
 %if cenilec == True:
    <div>
       <h1 style="color: white">Želite ostati cenilec</h1>
       <div class="contaniner">
          <form class="form-signin" role="form" method="post" action=".">
             <select type="select" class="form-control" name="je_cenilec">
-               <option value=TRUE>Nočem biti več cenilec</option>
-               <option value=FALSE>Želim ostati cenilec</option>
+               <option value=TRUE>Želim ostati cenilec</option>
+               <option value=FALSE>Nočem biti več cenilec</option>
             </select> 
             <button class="btn btn-lg btn-primary btn-block" type="submit">Potrdi</button>
          </form>

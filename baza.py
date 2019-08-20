@@ -227,19 +227,17 @@ def avto_post(x):
                         max_ponudba=max_ponudba, ponudba=None, podane_ocene=podane_ocene, pridobljene_ocene=pridobljene_ocene, napaka = 'Dražba je zaključena')
     elif cenitev != "":
         if int(cenitev) not in range(1,11):
-            return template('avto.html',x=x, ponudbe=ponudbe, avto=avto, username=username[0], cas=potekel_cas(zadnja_ponudba), je_cenilec=je_cenilec, cenitev=None, users=users,
+            if avto[-1] =='Še ni ponudbe':
+                return template('avto.html', x=x, ponudbe=ponudbe, avto=avto, podane_ocene=podane_ocene, je_cenilec=je_cenilec, users=users,
+                        pridobljene_ocene=pridobljene_ocene, username = username[0], ponudba=None, cenitev=None, napaka = 'Ocena mora biti med 1 in 10.')
+            else:
+                return template('avto.html',x=x, ponudbe=ponudbe, avto=avto, username=username[0], cas=potekel_cas(zadnja_ponudba), je_cenilec=je_cenilec, cenitev=None, users=users,
                             max_ponudba=max_ponudba, ponudba=None, podane_ocene=podane_ocene, pridobljene_ocene=pridobljene_ocene, napaka = 'Ocena mora biti med 1 in 10.')
         else:
             cur.execute("SELECT id_oseba FROM oseba WHERE username=%s OR username=%s", [kupec, username])
             osebi = cur.fetchall()
-            cur.execute("INSERT INTO ocena (avto, kupec, cenilec, vrednost) VALUES (%s, %s, %s, %s)", [x, osebi[0][0], osebi[1][0], cenitev])
-            cur.execute("""SELECT id_ocena, username, vrednost FROM oseba
-                        JOIN (SELECT id_ocena, kupec, vrednost FROM ocena 
-                        JOIN oseba ON oseba.id_oseba=ocena.cenilec WHERE username=%s AND avto=%s) 
-                        AS ocene ON oseba.id_oseba=ocene.kupec""", [username, x])
-            podane_ocene = cur.fetchall()
-            return template('avto.html', x=x, ponudbe=ponudbe, avto=avto, ponudba=None, cas=None, podane_ocene=podane_ocene, pridobljene_ocene=pridobljene_ocene, users=users,
-                            je_cenilec=je_cenilec, max_ponudba=max_ponudba, username=username[0], cenitev=None, napaka=None)
+            cur.execute("INSERT INTO ocena (avto, kupec, cenilec, vrednost) VALUES (%s, %s, %s, %s)", [x, osebi[1][0], osebi[0][0], cenitev])
+            return redirect("/avto/%s/" % (x))
     elif (len(ponudbe) == 0) and (int(avto[-2]) > int(ponudba)):
         return template('avto.html', x=x, ponudbe=ponudbe, avto=avto, ponudba=None, cas=None, podane_ocene=podane_ocene, pridobljene_ocene=pridobljene_ocene, users=users,
                         je_cenilec=je_cenilec, max_ponudba=max_ponudba, username=username[0], cenitev=None, napaka = 'Ponudba mora biti višja od izklicne cene')
@@ -251,17 +249,7 @@ def avto_post(x):
         ponudnik = cur.fetchone()[0]
         cur.execute("INSERT INTO ponudba (ponudnik, avto, ponujena_cena) VALUES (%s, %s, %s)",
                     [ponudnik, x, int(ponudba)])
-        cur.execute("SELECT cas, max_ponudba FROM ponudba"+
-                    " JOIN (SELECT avto, MAX(ponujena_cena) AS max_ponudba"+
-                    " FROM ponudba WHERE avto=%s"+
-                    "GROUP BY avto) AS nova ON nova.max_ponudba = ponudba.ponujena_cena", [x])
-        max_ponudba = cur.fetchone()
-        cur.execute("SELECT username, cas, ponujena_cena FROM ponudba" +
-                " JOIN oseba ON ponudba.ponudnik=oseba.id_oseba" +
-                " WHERE avto = %s", [x])
-        ponudbe = cur.fetchall()
-        return template('avto.html', x=x, ponudbe=ponudbe, avto=avto, ponudba=None, podane_ocene=podane_ocene, pridobljene_ocene=pridobljene_ocene, users=users,
-                        je_cenilec=je_cenilec, cas=potekel_cas(max_ponudba[0]), max_ponudba=max_ponudba[1], cenitev=None, username=username[0], napaka=None)
+        return redirect("/avto/%s/" % (x))
 
 
 @get("/login/")
@@ -462,7 +450,7 @@ def uporabnik(x):
             else:
                 vrstica.append('PORAŽENEC')
                 koncane.append(tuple(vrstica))
-    return template('user.html', koncane=koncane, aktivne=aktivne, cenitve=cenitve, cenilec=cenilec, cena=None, ocena=None, username=username[0])
+    return template('user.html', koncane=koncane, aktivne=aktivne, cenitve=cenitve, cenilec=cenilec, cena=None, ocena=None, napaka=None, username=username[0])
 
 @post("/user/:x/")
 def post_user(x):
@@ -504,13 +492,16 @@ def post_user(x):
     if cenilec == False:
         cena = request.forms.cena
         ocena = request.forms.ocena
-        cur.execute("UPDATE oseba SET je_cenilec=True, cena=%s, ocena=%s WHERE username=%s", [cena, ocena, username[0]])
-        return template('user.html', koncane=koncane, aktivne=aktivne, cenitve=cenitve, cenilec=not cenilec, cena=None, ocena=None, username=username[0])
+        if int(ocena) not in range(1,11):
+            return template('user.html', koncane=koncane, aktivne=aktivne, cenitve=cenitve, cenilec=cenilec, cena=None, ocena=None, username=username[0], napaka="Ocena mora biti med 1 in 10.")
+        else:
+            cur.execute("UPDATE oseba SET je_cenilec=True, cena=%s, ocena=%s WHERE username=%s", [cena, ocena, username[0]])
+            return redirect("/user/%s/" % (x))
     else:
         je_cenilec = request.forms.je_cenilec
         if je_cenilec:
-            cur.execute("UPDATE oseba SET je_cenilec=False, cena=NULL, ocena=NULL WHERE username=%s", [username[0]])
-            return template('user.html', koncane=koncane, aktivne=aktivne, cenitve=cenitve, cenilec=not cenilec, cena=None, ocena=None, username=username[0])
+            cur.execute("UPDATE oseba SET je_cenilec=%s, cena=NULL, ocena=NULL WHERE username=%s", [je_cenilec, username[0]])
+            return redirect("/user/%s/" % (x))
 
 
 @get("/cenilci/")
@@ -568,8 +559,7 @@ def post_cenilec(x):
     cenitve = cur.fetchall()
     if int(ocena) in range(1,11):
         cur.execute("INSERT INTO ocena_cenilca (id_cenilec, dana_ocena) VALUES (%s, %s)", [x, ocena])
-        return template('cenilec.html',ime=sez[0], priimek=sez[1], uporabnik=sez[2], racun=sez[3], kraj=sez[4], lastna_ocena=sez[5],
-                        cena=sez[6], povprecna_ocena=sez[7], ocena=None, ocene=cenitve, username=username[0], napaka=None)
+        return redirect("/cenilec/%s/" % (x))
     else:
         return template('cenilec.html',ime=sez[0], priimek=sez[1], uporabnik=sez[2], racun=sez[3], kraj=sez[4], lastna_ocena=sez[5],
                         cena=sez[6], povprecna_ocena=sez[7], ocena=None, ocene=cenitve, username=username[0], napaka='Oceno ste podali narobe!')
