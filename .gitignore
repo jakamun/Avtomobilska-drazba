@@ -37,3 +37,8 @@ rsconnect/
 auth.py
 auth.R
 .Rproj.user
+
+#izbris map _pycache_ in .vscode
+*.pyc
+__pycache__/
+.vscode/

@@ -74,7 +74,7 @@ def potekla_drazba(cas):
 
 
 def stanje_drazbe(avto):
-    '''za avto vrne ali je dražba potekl ali ne ali pa se sploh še ni začela'''
+    '''za avto vrne ali je dražba potekla ali ne, ali pa se sploh še ni začela'''
     cur.execute("SELECT MAX(cas) FROM ponudba WHERE avto=%s", [avto])
     zadnja_ponudba = cur.fetchone()[0]
     if zadnja_ponudba == None:

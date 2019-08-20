@@ -134,13 +134,13 @@
     </div>
 %end
 
-%if je_cenilec == True:
+%if je_cenilec == True and napaka != 'Dražba je zaključena':
     <div>
         <h1 style="color: white">Oceni avtomobil</h1>
     </div>
     <div class="p-3">
         <form class="user" role="form" method="post" action="." >
-            <span class="label-input100">Prejemnik:</span>
+            <span class="label-input100" style="color: white">Prejemnik:</span>
             <select name="user">
             %for useer in users:
                 % user = useer[0]
@@ -158,21 +158,24 @@
     </div>
 %end
 
-<div>
-    <h1 style="color: white">Podaj ponudbo</h1>
-</div>
-
-<center>
-    <div class="container">
-        <form class="form-signin" role="form" method="post" action=".">
-            <input type="ponudba" class="form-control" placeholder="Ponudba"
-            %if username:
-            value="{{ponudba}}"
-            %end
-            name="ponudba"
-            required autofocus>
-            <button class="btn btn-lg btn-primary btn-block" type="submit">Oddaj ponudbo</button>
-        </form>
+%if napaka != 'Dražba je zaključena':
+    <div>
+        <h1 style="color: white">Podaj ponudbo</h1>
     </div>
-</center>
+    <center>
+        <div class="container">
+            <form class="form-signin" role="form" method="post" action=".">
+                <input type="ponudba" class="form-control" placeholder="Ponudba"
+                %if username:
+                value="{{ponudba}}"
+                %end
+                name="ponudba"
+                required autofocus>
+                <button class="btn btn-lg btn-primary btn-block" type="submit">Oddaj ponudbo</button>
+            </form>
+        </div>
+    </center>
+%end
+
+
 
