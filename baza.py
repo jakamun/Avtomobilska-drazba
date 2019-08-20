@@ -246,9 +246,10 @@ def avto_post(x):
 @get("/login/")
 def login_get():
     """Serviraj formo za login."""
-    return template("login.html",
-                           napaka=None,
-                           username=None)
+    if request.get_cookie('username') != None:
+        return redirect('/')
+    else:
+        return template("login.html", napaka=None, username=None)
 
 
 @post("/login/")
@@ -273,19 +274,27 @@ def login_post():
 @get("/novo_geslo/")
 def novo_geslo_get():
     """Prikaži formo za geslo."""
-    return template("novo_geslo.html", username=None, napaka=None)
+    if request.get_cookie('username') != None:
+        return redirect('/')
+    else:
+        return template("novo_geslo.html", username=None, napaka=None)
 
 
 @post("/novo_geslo/")
 def novo_geslo_post():
     username = request.forms.username
-    password = password_md5(request.forms.password)
+    password1 = request.forms.password1
+    password2 = request.forms.password2
     c = conn.cursor()
     c.execute("SELECT 1 FROM oseba WHERE username=%s", [username])
     if c.fetchone() is None:
         # Uporabnik ne obstaja
         return template("novo_geslo.html", username=None, napaka='To uporabniško ime ne obstaja.')
-    else:   
+    elif not password1 == password2:
+        # Gesli se ne ujemata
+        return template("novo_geslo.html", username=None, napaka='Gesli se ne ujemata.')
+    else: 
+        password = password_md5(password1)  
         c.execute("UPDATE oseba SET password=%s WHERE username=%s",
               [password, username])
     redirect('/')
@@ -293,15 +302,18 @@ def novo_geslo_post():
 @get("/logout/")
 def logout():
     """Pobriši cookie in preusmeri na login."""
-    response.delete_cookie('username')
+    response.delete_cookie('username', path='/')
     redirect('/login/')
 
 
 @get("/register/")
 def register_get():
     """Prikaži formo za registracijo."""
-    return template("register.html", ime=None, priimek=None, racun=None, rojstvo=None,
-                          kraj=None, je_cenilec=None, cena=None, ocena=None, username=None, napaka=None)
+    if request.get_cookie('username') != None:
+        return redirect('/')
+    else:
+        return template("register.html", ime=None, priimek=None, racun=None, rojstvo=None,
+                        kraj=None, je_cenilec=None, cena=None, ocena=None, username=None, napaka=None)
 
 
 @post("/register/")
@@ -318,6 +330,8 @@ def register_post():
     username = request.forms.username
     password1 = request.forms.password1
     password2 = request.forms.password2
+    cur.execute("SELECT 1 FROM oseba WHERE racun=%s", [racun])
+    obs_racun = cur.fetchone()
     # Ali uporabnik že obstaja?
     c = conn.cursor()
     c.execute("SELECT 1 FROM oseba WHERE username=%s", [username])
@@ -326,9 +340,12 @@ def register_post():
         return template("register.html", ime=ime, priimek=priimek, racun=racun, rojstvo=rojstvo, kraj=kraj, 
             je_cenilec=je_cenilec, cena=cena, ocena=ocena, username=None, napaka='To uporabniško ime je zasedeno.')
     elif not password1 == password2:
-        # Geslo se ne ujemata
+        # Gesli se ne ujemata
         return template("register.html", ime=ime, priimek=priimek, racun=racun, rojstvo=rojstvo, kraj=kraj, 
             je_cenilec=je_cenilec, cena=cena, ocena=ocena, username=username, napaka='Gesli se ne ujemata.')
+    elif obs_racun:
+        return template("register.html", ime=ime, priimek=priimek, racun=None, rojstvo=rojstvo, kraj=kraj, 
+            je_cenilec=je_cenilec, cena=cena, ocena=ocena, username=username, napaka='Nekdo ze ima tak racun.')
     elif je_cenilec=='TRUE':
         if cena == '':
             return template("register.html", ime=ime, priimek=priimek, racun=racun, rojstvo=rojstvo, kraj=kraj, 
